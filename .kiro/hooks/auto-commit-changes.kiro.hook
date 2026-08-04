@@ -1,13 +1,15 @@
 {
   "enabled": true,
   "name": "自动提交代码修改",
-  "description": "每次Kiro完成一轮代码修改后，自动将改动提交到本地git仓库，方便用户随时回溯查看历史版本",
+  "description": "每次Kiro完成一轮代码修改后，自动将改动提交到本地git仓库并推送到远程GitHub仓库，方便用户随时回溯查看历史版本",
   "version": "1",
   "when": {
     "type": "agentStop"
   },
   "then": {
     "type": "runCommand",
-    "command": "cd \"/Users/newair/Desktop/datawind fetch excel\" && git add -A && git diff --cached --quiet || git commit -m \"auto: $(date '+%Y-%m-%d %H:%M:%S')\""
-  }
+    "command": "cd \"/Users/newair/Desktop/datawind fetch excel\" && git add -A && (git diff --cached --quiet || git commit -m \"auto: $(date '+%Y-%m-%d %H:%M:%S')\") && git push origin main"
+  },
+  "workspaceFolderName": "datawind fetch excel",
+  "shortName": "auto-commit-changes"
 }
