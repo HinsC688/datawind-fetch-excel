@@ -10,7 +10,7 @@ import websocket
 CDP_URL = "http://127.0.0.1:9222/json"
 DASHBOARD_ID = "41204"
 CAPTURE_SECONDS = 75
-OUTPUT = Path("/tmp/datawind-network-events.json")
+OUTPUT = Path("artifacts/datawind-network-events.json")
 NETWORK_METHODS = {
     "Network.requestWillBeSent",
     "Network.responseReceived",
@@ -64,6 +64,7 @@ def main():
         except websocket.WebSocketTimeoutException:
             continue
 
+    OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     OUTPUT.write_text(json.dumps(events, ensure_ascii=False, indent=2), encoding="utf-8")
     requests = [event for event in events if event.get("method") == "Network.requestWillBeSent"]
     failures = [event for event in events if event.get("method") == "Network.loadingFailed"]
