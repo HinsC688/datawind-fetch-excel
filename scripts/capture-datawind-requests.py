@@ -10,7 +10,7 @@ import websocket
 CDP_URL = "http://127.0.0.1:9222/json"
 DASHBOARD_ID = "41204"
 CAPTURE_SECONDS = 75
-OUTPUT = Path("artifacts/datawind-network-events.json")
+OUTPUT = Path("artifacts")
 NETWORK_METHODS = {
     "Network.requestWillBeSent",
     "Network.responseReceived",
