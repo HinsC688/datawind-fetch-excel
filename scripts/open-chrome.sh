@@ -14,7 +14,7 @@ if ! [ -x "$CHROME" ]; then
   exit 1
 fi
 
-echo "启动 CDP Chrome（端口 $PORT）..."
+echo "启动 CDP Chrome（端口 ${PORT}）..."
 "$CHROME" \
   --remote-debugging-port="$PORT" \
   --remote-allow-origins='*' \
