@@ -28,13 +28,24 @@ def get_tab_socket():
 
 
 def main():
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--no-reload", action="store_true", help="Listen for manual table actions.")
+    parser.add_argument("--seconds", type=int, default=CAPTURE_SECONDS)
+    args = parser.parse_args()
+
     ws = websocket.create_connection(get_tab_socket(), timeout=5)
     message_id = 0
     events = []
+    requests = {}
 
     def record(message):
-        if message.get("method") in NETWORK_METHODS:
+        method = message.get("method")
+        if method in NETWORK_METHODS:
             events.append(message)
+        if method == "Network.requestWillBeSent":
+            requests[message["params"]["requestId"]] = message["params"]
 
     def send(method, params=None):
         nonlocal message_id
@@ -48,36 +59,54 @@ def main():
             record(message)
             if message.get("id") == command_id:
                 if "error" in message:
-                    raise RuntimeError(f"CDP command failed: {message['error']}")
-                return
+                    raise RuntimeError(message["error"])
+                return message.get("result", {})
 
     wait_for(send("Network.enable"))
     wait_for(send("Network.setCacheDisabled", {"cacheDisabled": True}))
     wait_for(send("Page.enable"))
-    wait_for(send("Page.reload", {"ignoreCache": True}))
+    if args.no_reload:
+        print("Listening now: open Push任务明细表, set the period, then click refresh in Chrome.")
+    else:
+        wait_for(send("Page.reload", {"ignoreCache": True}))
 
-    print(f"Capturing network activity for {CAPTURE_SECONDS} seconds...")
-    deadline = time.time() + CAPTURE_SECONDS
+    deadline = time.time() + args.seconds
+    print(f"Capturing network activity for {args.seconds} seconds...")
     while time.time() < deadline:
         try:
             record(json.loads(ws.recv()))
         except websocket.WebSocketTimeoutException:
             continue
 
+    bodies = []
+    for event in events:
+        if event.get("method") != "Network.responseReceived":
+            continue
+        params = event["params"]
+        if params.get("type") not in {"XHR", "Fetch"}:
+            continue
+        request_id = params["requestId"]
+        request = requests.get(request_id, {}).get("request", {})
+        try:
+            result = wait_for(send("Network.getResponseBody", {"requestId": request_id}))
+        except RuntimeError as error:
+            bodies.append({"request_id": request_id, "url": request.get("url"), "error": str(error)})
+            continue
+        body = result.get("body", "")
+        try:
+            body = json.loads(body)
+        except json.JSONDecodeError:
+            pass
+        bodies.append({"request_id": request_id, "url": request.get("url"),
+                       "method": request.get("method"), "post_data": request.get("postData"), "body": body})
+
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     OUTPUT.write_text(json.dumps(events, ensure_ascii=False, indent=2), encoding="utf-8")
-    requests = [event for event in events if event.get("method") == "Network.requestWillBeSent"]
+    bodies_path = OUTPUT.with_name("datawind-response-bodies.json")
+    bodies_path.write_text(json.dumps(bodies, ensure_ascii=False, indent=2), encoding="utf-8")
     failures = [event for event in events if event.get("method") == "Network.loadingFailed"]
-    print(f"Captured {len(requests)} requests and {len(failures)} failed loads.")
-    for event in requests:
-        request = event["params"]["request"]
-        kind = event["params"].get("type", "")
-        if kind in {"XHR", "Fetch"}:
-            print(f"{kind} {request['method']} {request['url']}")
-    for event in failures:
-        params = event["params"]
-        print(f"FAILED {params.get('errorText')} ({params.get('blockedReason', '')})")
-    print(f"Saved all events to {OUTPUT}")
+    print(f"Captured {len(requests)} requests, {len(bodies)} XHR/Fetch bodies, and {len(failures)} failures.")
+    print(f"Saved results to {OUTPUT} and {bodies_path}")
     ws.close()
 
 
