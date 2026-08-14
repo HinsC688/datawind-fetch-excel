@@ -35,6 +35,8 @@ def main():
     parser.add_argument("--seconds", type=int, default=CAPTURE_SECONDS)
     args = parser.parse_args()
 
+    run_id = time.strftime("%Y%m%dT%H%M%S")
+    output = OUTPUT / f"{run_id}-network-events.json"
     ws = websocket.create_connection(get_tab_socket(), timeout=5)
     message_id = 0
     events = []
@@ -100,13 +102,13 @@ def main():
         bodies.append({"request_id": request_id, "url": request.get("url"),
                        "method": request.get("method"), "post_data": request.get("postData"), "body": body})
 
-    OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-    OUTPUT.write_text(json.dumps(events, ensure_ascii=False, indent=2), encoding="utf-8")
-    bodies_path = OUTPUT.with_name("datawind-response-bodies.json")
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(events, ensure_ascii=False, indent=2), encoding="utf-8")
+    bodies_path = output.with_name(f"{run_id}-response-bodies.json")
     bodies_path.write_text(json.dumps(bodies, ensure_ascii=False, indent=2), encoding="utf-8")
     failures = [event for event in events if event.get("method") == "Network.loadingFailed"]
     print(f"Captured {len(requests)} requests, {len(bodies)} XHR/Fetch bodies, and {len(failures)} failures.")
-    print(f"Saved results to {OUTPUT} and {bodies_path}")
+    print(f"Saved results to {output} and {bodies_path}")
     ws.close()
 
 
