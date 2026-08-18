@@ -18,12 +18,12 @@ NETWORK_METHODS = {
 }
 
 
-def get_tab_socket():
+def get_tab_socket(dashboard_id):
     with urlopen(CDP_URL, timeout=5) as response:
         tabs = json.load(response)
-    tab = next((item for item in tabs if DASHBOARD_ID in item.get("url", "")), None)
+    tab = next((item for item in tabs if dashboard_id in item.get("url", "")), None)
     if not tab:
-        raise RuntimeError(f"No Chrome tab found for dashboard {DASHBOARD_ID}")
+        raise RuntimeError(f"No Chrome tab found for dashboard {dashboard_id}")
     return tab["webSocketDebuggerUrl"]
 
 
@@ -33,11 +33,13 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--no-reload", action="store_true", help="Listen for manual table actions.")
     parser.add_argument("--seconds", type=int, default=CAPTURE_SECONDS)
+    parser.add_argument("--dashboard-id", default=DASHBOARD_ID, help="DataWind dashboard id to match the Chrome tab URL.")
+    parser.add_argument("--prefix", default=None, help="Custom filename prefix instead of timestamp (still saved under artifacts/).")
     args = parser.parse_args()
 
-    run_id = time.strftime("%Y%m%dT%H%M%S")
+    run_id = args.prefix or time.strftime("%Y%m%dT%H%M%S")
     output = OUTPUT / f"{run_id}-network-events.json"
-    ws = websocket.create_connection(get_tab_socket(), timeout=5)
+    ws = websocket.create_connection(get_tab_socket(args.dashboard_id), timeout=5)
     message_id = 0
     events = []
     requests = {}

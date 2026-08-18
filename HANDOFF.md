@@ -173,6 +173,43 @@ DataWind 一次返回上千条各种任务的数据，但飞书模板只想追�
 
 ---
 
+## 7A. 新任务进度（2026-08-18 开始）：KYC 整體觸達數據
+
+### 新项目信息（跟第1-6节的 PUSH 周度汇总项目是两个不同的项目，不要混淆）
+- 飞书文档：`KYC 整體觸達數據`
+  - Wiki 链接：`https://l7jipx1bfq.larksuite.com/wiki/ENypwi8abiNuUjk6SzHuWx22slh`
+  - **spreadsheet_token（obj_token）: `Wmq4s0mJHh3HZ7tITvbu261ZsFb`**
+  - 4个 tab：
+    - `彈窗數據`：sheet_id `b45c2f`，列 A1:M1 = `Week,触达工具,触达详情,弹窗模版,注册距今时间范围,uj_type,是否kyc,曝光用户,点击用户,点击率,触达24h内kyc,24h内kyc率,備註`。当前只track APP渠道模板（"中台-D1至0409后注册用户KYC引导-弹窗A/B组50%分流-APP..."这类），**忽略WEB/H5部分**。目前数据只写到 `0706-0714` 周期（第32-39行），历史断档大（`0709-0716`~`0805-0811`都没补），**这次只加 `0812-0817` 一组即可，不用回补历史**。
+    - `邮件数据`：sheet_id `6kyjFR`，列 A1:P1 = `周期,流程名称,reg_range,uj_type,is_kyc_show,曝光用户,点击用户,点击率,触达24h内FTD,24h内FTD率,触达24h内eFTD,24h内eFTD率,触达24h内eFTTc,24h内eFTTc率,触达24h内kyc,24h内kyc率`。已写到 `0805-0811`（第90-110行，110行是最后一行，111行需确认是否空行分隔）。**下一批 `0812-0817` 从112行左右开始写（先读一遍A108:Q115确认空行位置再写）**。
+    - `push数据`：sheet_id `BHIztA`，列 A1:J1 = `周期,流程名称,reg_range,uj_type,is_kyc_show,曝光用户,点击用户,点击率,触达24h内kyc,24h内kyc率`。已写到 `0805-0811`（第94-115行）。**下一批 `0812-0817` 从116行左右开始写（116空行分隔，117起新数据，先读A113:J120确认）**。
+    - `KYC 觸達 AP 連結`：sheet_id `6fQBnz`，纯参考链接表，不涉及本次写入。
+  - 三个数据tab都是"周期分组+多行任务"结构，同一周期只在该组第一行A列写周期标签，其余留空（跟旧项目"流程名称"列的填法逻辑一致，但这里A列是"周期"不是"流程名称"）。
+  - **用户确认**：抓取数据以"上周"（即 `0812-0817`）DataWind界面上实际显示的流程名称为准，不要用飞书历史行反推。
+
+### DataWind 新看板信息
+- 目标看板 URL：`https://datawind.xiaoxiame.com/bi/pages/dashboard/40450?appId=2&sheetId=14003`
+- dashboard_id: `40450`（跟旧项目的 `41204` 不是同一个看板，抓取脚本需要传 `--dashboard-id 40450`）
+- 具体的组件/reportId、真实查询接口字段结构，**还没抓取验证过**，需要在FortiVPN环境下打开新看板后重新确认（大概率还是走 `POST /bi/aeolus/vqs/api/v2/vizQuery/query`，但reportId等要重新读取响应确认，不能直接套用旧项目的 `286219`）。
+
+### 脚本改动（已完成）
+- `scripts/capture-datawind-requests.py` 已支持 `--dashboard-id` 参数（默认还是旧项目的 `41204`，兼容旧用法），新项目需要显式传 `--dashboard-id 40450`。同时加了 `--prefix` 参数，可选自定义文件名前缀。
+
+### 当前卡点（2026-08-18）
+用户当前网络环境是 Clash（跟Kiro对话连接用的网络），DataWind内网需要切到FortiVPN才能访问，而**这台机器上FortiVPN和Clash不能同时连接**，用户切换到FortiVPN会导致跟Kiro的对话断线。用户已确认理解这个限制，准备手动切换。
+
+**如果这轮对话在切换网络后断线，新会话/新一轮对话请直接执行以下步骤**（不需要再重新问用户需求，以上确认过的范围直接执行）：
+1. 检查网络：`curl -s -o /dev/null -w "%{http_code}\n" --connect-timeout 5 https://datawind.xiaoxiame.com`，返回200/其他非000说明FortiVPN已连通。
+2. 打开新看板：`bash scripts/open-chrome.sh "https://datawind.xiaoxiame.com/bi/pages/dashboard/40450?appId=2&sheetId=14003"`
+3. 用户在弹出的Chrome里登录DataWind，进入看板，找到本次要抓的几个明细表组件（弹窗/邮件/push三类数据可能是不同组件，也可能在同一看板的不同tab/区域），把时间筛选切换成绝对日期范围 `2026-08-12` 至 `2026-08-17`（**必须绝对日期，不能用"最近7天"等相对筛选**）。
+4. 新开终端运行抓取：`python3 scripts/capture-datawind-requests.py --dashboard-id 40450 --no-reload --seconds 120`，看到"Listening now"提示后回Chrome里点刷新。
+5. 抓取完成后，网络切回Clash（用户手动操作），验证飞书连通性后，读取三个tab现有内容的**末尾几行**（比如push数据tab读 `A110:J120`，邮件数据tab读 `A105:Q115`，弹窗数据tab读 `A25:M40`）确认准确的空行分隔位置和插入起始行号，然后比照 `scripts/write-weekly-w31.py` 的逐行写入模式（**禁止用批量`--writes`**，见坑#6），为这三个tab各写一版新脚本（或参数化成一个通用脚本），逐行写入 `0812-0817` 的新数据。
+6. 写入前必须先dry-run，写入后必须回读验证（见坑#6和SOP第5节）。
+7. 字段ID仍需从新看板响应的 `vizData.aliasMap` 动态查找，不要假设跟旧项目一致（见坑#7）。
+8. 注意新看板的1000行截断风险，抓取后检查响应里的`atLeast`/`total`类似字段（见坑#5/#13）。
+
+---
+
 ## 7. 建议新会话的第一步
 
 1. 检查飞书 CLI 登录状态是否还有效（`auth status`）。
