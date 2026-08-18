@@ -154,46 +154,88 @@ def main():
             for uid, alias in res["alias_map"].items():
                 print(f"    {uid} -> {alias!r}")
 
-        if rows:
+        dict_rows = [row for row in rows if isinstance(row, dict)]
+        if rows and not dict_rows:
+            print(f"  ⚠️  datasets 有 {len(rows)} 项但不是字典结构（可能是空结果或另一种图表格式），跳过样本")
+        if dict_rows:
             print(f"  前 {args.show_rows} 行样本（uniqueId为键）:")
-            for row in rows[: args.show_rows]:
+            for row in dict_rows[: args.show_rows]:
                 readable = {res["alias_map"].get(key, key): value for key, value in row.items()}
                 print(f"    {json.dumps(readable, ensure_ascii=False)[:600]}")
 
             # 渠道分布：找出可能表示触达渠道的维度字段
             for uid, alias in dim_fields.items():
-                values = [row.get(uid) for row in rows if uid in row]
+                values = [row.get(uid) for row in dict_rows if uid in row]
                 distinct = Counter(value for value in values if value not in (None, "", " "))
                 if 1 <= len(distinct) <= 12:
                     print(f"  维度 {alias!r} 取值分布: {dict(distinct)}")
 
+        date_filters = [flt for flt in req["filters"] if (flt["name"] or "") == "p_date"]
+        has_between_date = any(flt["op"] == "between" for flt in date_filters)
+        has_relative_date = any(flt["op"] in {"lastSync", "last"} for flt in date_filters)
         candidates.append({
             "index": index,
-            "rows": len(rows),
+            "report_id": req["report_id"],
+            "rows": len(dict_rows),
             "has_p_date": req["has_p_date_dim"],
             "dimensions": req["dimensions"],
             "filters": req["filters"],
+            "truncated": isinstance(limit, int) and biggest >= limit,
+            "has_between_date": has_between_date,
+            "has_relative_date": has_relative_date,
+            "date_val": [flt["val"] for flt in date_filters],
         })
 
-    # 给出选用建议
+    # 汇总一张对照表，便于快速比较多个请求
     print("\n" + "=" * 70)
-    print("=== 选用建议 ===")
-    valid = [c for c in candidates if not c["has_p_date"] and c["rows"] > 0]
-    if valid:
-        best = max(valid, key=lambda c: (c["rows"], c["index"]))
-        print(f"✅ 建议使用 请求 #{best['index']}（已取消p_date维度，{best['rows']}行数据）")
+    print("=== 全部请求对照表 ===")
+    header = f"{'#':>3} {'reportId':>9} {'行数':>6} {'p_date维度':>10} {'截断':>5} {'绝对日期':>9} {'相对日期':>9}"
+    print(header)
+    for c in candidates:
+        print(f"{c['index']:>3} {str(c['report_id']):>9} {c['rows']:>6} "
+              f"{('有' if c['has_p_date'] else '无'):>10} "
+              f"{('是' if c['truncated'] else '否'):>5} "
+              f"{('是' if c['has_between_date'] else '否'):>9} "
+              f"{('是' if c['has_relative_date'] else '否'):>9}")
+
+    print("\n=== 选用建议 ===")
+    # 理想请求：无p_date维度 + 有数据 + 绝对日期筛选 + 未被截断
+    def score(c):
+        return (
+            c["rows"] > 0,
+            not c["has_p_date"],
+            c["has_between_date"],
+            not c["truncated"],
+            c["rows"],
+        )
+
+    ideal = [c for c in candidates
+             if c["rows"] > 0 and not c["has_p_date"] and c["has_between_date"] and not c["truncated"]]
+    if ideal:
+        best = max(ideal, key=lambda c: (c["rows"], c["index"]))
+        print(f"✅ 建议使用 请求 #{best['index']}（reportId={best['report_id']}，{best['rows']}行，"
+              f"无p_date维度，绝对日期筛选，未截断）")
         print(f"   维度: {best['dimensions']}")
-        if len(valid) > 1:
-            print(f"   注：另有 {len(valid) - 1} 个请求也符合条件"
-                  f"（#{[c['index'] for c in valid if c['index'] != best['index']]}），"
-                  f"如果筛选条件不同请人工确认选哪个。")
-    else:
-        with_rows = [c for c in candidates if c["rows"] > 0]
-        if with_rows:
-            print("⚠️  所有有数据的请求都还包含 p_date 维度，粒度是'每天一行'，跟飞书表的'整周期一行'对不上。")
-            print("    需要在 DataWind 界面取消 p_date 维度后重新抓取。")
-        else:
-            print("⚠️  抓到了请求但都没有数据行，可能查询失败或筛选条件过严，请检查上面每个请求的 code 和筛选条件。")
+        print(f"   日期范围: {best['date_val']}")
+        return
+
+    print("⚠️  没有找到完全符合条件的请求。逐项诊断：")
+    with_rows = [c for c in candidates if c["rows"] > 0]
+    if not with_rows:
+        print("   - 所有请求都没有数据行，检查查询是否失败或筛选过严。")
+        return
+
+    best_effort = max(with_rows, key=score)
+    print(f"   - 目前最接近的是 请求 #{best_effort['index']}"
+          f"（reportId={best_effort['report_id']}，{best_effort['rows']}行）")
+    if best_effort["has_p_date"]:
+        print("   - ❌ 仍含 p_date 维度 → 需要在 DataWind 界面取消该维度")
+    if not best_effort["has_between_date"]:
+        print("   - ❌ 日期筛选不是绝对范围（between）→ 需要在界面改成绝对日期 2026-08-12 ~ 2026-08-17")
+        if best_effort["has_relative_date"]:
+            print(f"        当前是相对时间筛选，取值 {best_effort['date_val']}")
+    if best_effort["truncated"]:
+        print("   - ❌ 被 limit 截断 → 需要按渠道分次筛选抓取，或在界面减少维度/缩小范围")
 
 
 if __name__ == "__main__":
