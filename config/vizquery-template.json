@@ -1,0 +1,2427 @@
+{
+  "_说明": "从 artifacts/20260818T165256 那次成功抓取里提取的 vizQuery 请求模板。scripts/fetch-datawind.py 会替换其中的 p_date 范围和 detail 名单后重放，用于免手工操作地取数。",
+  "_来源": "artifacts/20260818T165256-response-bodies.json 中带detail筛选、78行、唯一键无重复的那个请求",
+  "url": "https://datawind.xiaoxiame.com/bi/aeolus/vqs/api/v2/vizQuery/query?requestId=aeolus.dashboard.AveryB.app_2.dashboard_40450.sheet_14003.report_287596.dataset_8745.componentId_b26fc663-5dda-445d-8090-a083d246b05e.queryScene_dashboard.6f44014b-9518-4d0d-9818-cf7081058de4&reportId=287596",
+  "post_data": {
+    "version": 4,
+    "metaData": {
+      "appId": 2
+    },
+    "reportId": 287596,
+    "dataSourceId": 73,
+    "query": {
+      "dataSetId": 8745,
+      "dataSetIdList": [
+        8745
+      ],
+      "fabricBlendingModelInfo": {},
+      "transform": {
+        "type": "table"
+      },
+      "groupByIdList": [
+        "1677720",
+        "dynamic260413161942342",
+        "dynamic260410212758216",
+        "dynamic260706110251098",
+        "dynamic260714171228101",
+        "dynamic260714171228288"
+      ],
+      "selectIdList": [
+        "countdistinct_1677741",
+        "countdistinct_1677739",
+        "1677850",
+        "countdistinct_1677737",
+        "1677829",
+        "countdistinct_1677738",
+        "1677830",
+        "countdistinct_1677740",
+        "1677849",
+        "countdistinct_1694978",
+        "1694979"
+      ],
+      "fillDateTimeList": [],
+      "followFilterRangeList": [],
+      "locations": {
+        "dimensions": [
+          "1677720",
+          "dynamic260413161942342",
+          "dynamic260410212758216",
+          "dynamic260706110251098",
+          "dynamic260714171228101",
+          "dynamic260714171228288"
+        ],
+        "rows": [],
+        "columns": [],
+        "tooltips": []
+      },
+      "dimMetList": [
+        {
+          "id": "dynamic260413161942342",
+          "originId": "1677722",
+          "dimMetId": 1677722,
+          "uniqueId": 260413161942342,
+          "name": "业务类型",
+          "expr": "`type`",
+          "fullExpr": "`type`",
+          "roleType": 0,
+          "scope": 0,
+          "dataType": "string",
+          "isRaw": false,
+          "mapKey": null,
+          "aggregation": {},
+          "sourceType": "raw",
+          "persisted": true,
+          "ownerEmailPrefix": "ZhuoF",
+          "dataSetId": 8745
+        },
+        {
+          "id": "dynamic260410212758216",
+          "originId": "1677725",
+          "dimMetId": 1677725,
+          "uniqueId": 260410212758216,
+          "name": "触达详情",
+          "expr": "detail",
+          "fullExpr": "detail",
+          "roleType": 0,
+          "scope": 0,
+          "dataType": "string",
+          "isRaw": false,
+          "mapKey": null,
+          "aggregation": {},
+          "sourceType": "raw",
+          "persisted": true,
+          "ownerEmailPrefix": "ZhuoF",
+          "dataSetId": 8745
+        },
+        {
+          "id": "dynamic260706110251098",
+          "originId": "1677708",
+          "dimMetId": 1677708,
+          "uniqueId": 260706110251098,
+          "name": "reg_range",
+          "expr": "reg_range",
+          "fullExpr": "reg_range",
+          "roleType": 0,
+          "scope": 0,
+          "dataType": "string",
+          "isRaw": false,
+          "mapKey": null,
+          "aggregation": {},
+          "sourceType": "raw",
+          "persisted": true,
+          "ownerEmailPrefix": "ZhuoF",
+          "dataSetId": 8745
+        },
+        {
+          "id": "dynamic260714171228101",
+          "originId": "1677712",
+          "dimMetId": 1677712,
+          "uniqueId": 260714171228101,
+          "name": "uj_type",
+          "expr": "uj_type",
+          "fullExpr": "uj_type",
+          "roleType": 0,
+          "scope": 0,
+          "dataType": "string",
+          "isRaw": false,
+          "mapKey": null,
+          "aggregation": {},
+          "sourceType": "raw",
+          "persisted": true,
+          "ownerEmailPrefix": "ZhuoF",
+          "dataSetId": 8745
+        },
+        {
+          "id": "dynamic260714171228288",
+          "originId": "1694976",
+          "dimMetId": 1694976,
+          "uniqueId": 260714171228288,
+          "name": "is_kyc_show",
+          "expr": "is_kyc_show",
+          "fullExpr": "is_kyc_show",
+          "roleType": 0,
+          "scope": 0,
+          "dataType": "string",
+          "isRaw": false,
+          "mapKey": null,
+          "aggregation": {},
+          "sourceType": "raw",
+          "persisted": true,
+          "ownerEmailPrefix": "ZhuoF",
+          "dataSetId": 8745
+        },
+        {
+          "id": "countdistinct_1677741",
+          "originId": "1677741",
+          "dimMetId": 1677741,
+          "uniqueId": 260410212759770,
+          "name": "曝光用户",
+          "expr": "case when [is_show]=1 then [parent_member_id] end",
+          "fullExpr": "case when (is_show)=1 then (parent_member_id) end",
+          "roleType": 1,
+          "scope": 0,
+          "dataType": "int",
+          "isRaw": false,
+          "mapKey": null,
+          "aggregation": {
+            "exprAggr": "count(distinct "
+          },
+          "sourceType": "aggr",
+          "persisted": false,
+          "ownerEmailPrefix": "ZhuoF",
+          "dataSetId": 8745
+        },
+        {
+          "id": "countdistinct_1677739",
+          "originId": "1677739",
+          "dimMetId": 1677739,
+          "uniqueId": 260410212759918,
+          "name": "点击用户",
+          "expr": "case when [is_clk]=1 then [parent_member_id] end",
+          "fullExpr": "case when (is_clk)=1 then (parent_member_id) end",
+          "roleType": 1,
+          "scope": 0,
+          "dataType": "int",
+          "isRaw": false,
+          "mapKey": null,
+          "aggregation": {
+            "exprAggr": "count(distinct "
+          },
+          "sourceType": "aggr",
+          "persisted": false,
+          "ownerEmailPrefix": "ZhuoF",
+          "dataSetId": 8745
+        },
+        {
+          "id": "countdistinct_1677737",
+          "originId": "1677737",
+          "dimMetId": 1677737,
+          "uniqueId": 260410212760161,
+          "name": "触达24h内FTD",
+          "expr": "case when [is_24h_ftd]=1 then [parent_member_id] end",
+          "fullExpr": "case when (is_24h_ftd)=1 then (parent_member_id) end",
+          "roleType": 1,
+          "scope": 0,
+          "dataType": "int",
+          "isRaw": false,
+          "mapKey": null,
+          "aggregation": {
+            "exprAggr": "count(distinct "
+          },
+          "sourceType": "aggr",
+          "persisted": false,
+          "ownerEmailPrefix": "ZhuoF",
+          "dataSetId": 8745
+        },
+        {
+          "id": "countdistinct_1677738",
+          "originId": "1677738",
+          "dimMetId": 1677738,
+          "uniqueId": 260410212760342,
+          "name": "触达24h内eFTD",
+          "expr": "case when [is_24h_eftd]=1 then [parent_member_id] end",
+          "fullExpr": "case when (is_24h_eftd)=1 then (parent_member_id) end",
+          "roleType": 1,
+          "scope": 0,
+          "dataType": "int",
+          "isRaw": false,
+          "mapKey": null,
+          "aggregation": {
+            "exprAggr": "count(distinct "
+          },
+          "sourceType": "aggr",
+          "persisted": false,
+          "ownerEmailPrefix": "ZhuoF",
+          "dataSetId": 8745
+        },
+        {
+          "id": "countdistinct_1677740",
+          "originId": "1677740",
+          "dimMetId": 1677740,
+          "uniqueId": 260410212760537,
+          "name": "触达24h内eFTTc",
+          "expr": "case when [is_24h_efttc]=1 then [parent_member_id] end",
+          "fullExpr": "case when (is_24h_efttc)=1 then (parent_member_id) end",
+          "roleType": 1,
+          "scope": 0,
+          "dataType": "int",
+          "isRaw": false,
+          "mapKey": null,
+          "aggregation": {
+            "exprAggr": "count(distinct "
+          },
+          "sourceType": "aggr",
+          "persisted": false,
+          "ownerEmailPrefix": "ZhuoF",
+          "dataSetId": 8745
+        },
+        {
+          "id": "countdistinct_1694978",
+          "originId": "1694978",
+          "dimMetId": 1694978,
+          "uniqueId": 260526113832123,
+          "name": "触达24h内kyc",
+          "expr": "case when [is_24h_kyc]=1 then [parent_member_id] end",
+          "fullExpr": "case when (is_24h_kyc)=1 then (parent_member_id) end",
+          "roleType": 1,
+          "scope": 0,
+          "dataType": "int",
+          "isRaw": false,
+          "mapKey": null,
+          "aggregation": {
+            "exprAggr": "count(distinct "
+          },
+          "sourceType": "aggr",
+          "persisted": false,
+          "ownerEmailPrefix": "ZhuoF",
+          "dataSetId": 8745
+        }
+      ],
+      "whereList": [
+        {
+          "name": "p_date",
+          "id": "1677704",
+          "preRelation": "and",
+          "uniqueId": 260410183303011,
+          "op": "between",
+          "val": [
+            "2026-08-12 00:00:00",
+            "2026-08-17 23:59:59"
+          ],
+          "valOption": {
+            "anchorOffset": 0,
+            "datetimeUnit": "day",
+            "hourSharp": true
+          },
+          "option": {
+            "isReportFilter": true,
+            "isWhereInAggr": true,
+            "dateMode": "absolute",
+            "isDefaultPartitionField": true
+          }
+        },
+        {
+          "name": "is_signup_risk",
+          "id": "1677716",
+          "preRelation": "and",
+          "uniqueId": 260410183303540,
+          "op": "not in",
+          "option": {
+            "customList": [],
+            "desensitizationList": [],
+            "displayType": "multiDropDownList",
+            "filterPattern": "Accurate",
+            "isReportFilter": false,
+            "isWhereInAggr": true
+          },
+          "val": [
+            "1"
+          ],
+          "valOption": {}
+        },
+        {
+          "name": "reg_range",
+          "id": "1677708",
+          "preRelation": "and",
+          "uniqueId": 260410183304108,
+          "op": "in",
+          "val": [
+            "注册1-7天",
+            "注册15-30天",
+            "注册30天以上",
+            "注册8-14天",
+            "注册当天"
+          ],
+          "valOption": {},
+          "option": {
+            "isReportFilter": true,
+            "isWhereInAggr": true,
+            "desensitizationList": [],
+            "customList": [],
+            "displayType": "multiDropDownList",
+            "filterPattern": "Accurate"
+          }
+        },
+        {
+          "name": "sign_risk",
+          "id": "1677717",
+          "preRelation": "and",
+          "uniqueId": 260410183303355,
+          "op": "in",
+          "option": {
+            "customList": [],
+            "desensitizationList": [],
+            "displayType": "multiDropDownList",
+            "filterPattern": "Accurate",
+            "isReportFilter": false,
+            "isWhereInAggr": true
+          },
+          "val": [
+            null
+          ],
+          "valOption": {}
+        },
+        {
+          "name": "reg_channel",
+          "id": "1677718",
+          "preRelation": "and",
+          "uniqueId": 260410190023413,
+          "op": "not in",
+          "val": [
+            null
+          ],
+          "valOption": {},
+          "option": {
+            "isReportFilter": true,
+            "isWhereInAggr": true,
+            "desensitizationList": [],
+            "customList": [],
+            "displayType": "multiDropDownList",
+            "filterPattern": "Accurate"
+          }
+        },
+        {
+          "name": "uj_type",
+          "id": "1677712",
+          "preRelation": "and",
+          "uniqueId": 260411010210081,
+          "op": "not in",
+          "option": {
+            "customList": [],
+            "desensitizationList": [],
+            "displayType": "multiDropDownList",
+            "filterPattern": "Accurate",
+            "isReportFilter": false,
+            "isWhereInAggr": true
+          },
+          "val": [
+            null,
+            "未注册"
+          ],
+          "valOption": {}
+        },
+        {
+          "name": "uj_type",
+          "id": "1677712",
+          "preRelation": "and",
+          "uniqueId": 260411010210162,
+          "op": "in",
+          "val": [
+            "注册未FTD"
+          ],
+          "valOption": {},
+          "option": {
+            "isReportFilter": true,
+            "isWhereInAggr": true,
+            "desensitizationList": [],
+            "displayType": "multiDropDownList",
+            "filterPattern": "Accurate",
+            "customList": []
+          }
+        },
+        {
+          "name": "detail",
+          "id": "1677725",
+          "preRelation": "and",
+          "uniqueId": 260413151630079,
+          "op": "like",
+          "val": [
+            "中台-D30后-0409后注册用户KYC引导（合规素材）-0715-所有地区",
+            "中台-D15~30-0409后注册用户KYC引导（合规素材）-0715-所有地区",
+            "中台-D8~14-0409后注册用户KYC引导-0813-10000U-320U对照组（B组）",
+            "中台-D8~14-0409后注册用户KYC引导-0813-10000U-310U对照组（B组）",
+            "中台-D8~14-0409后注册用户KYC引导-0813-10000U-305U对照组（B组）",
+            "中台-D8~14-0409后注册用户KYC引导-0813（註冊＋入金320U）-上下组合（A组）",
+            "中台-D8~14-0409后注册用户KYC引导-0813（註冊＋入金310U）-上下组合（A组）",
+            "中台-D8~14-0409后注册用户KYC引导-0813（註冊＋入金305U）-上下组合（A组）",
+            "中台-D1~7-0409后注册用户KYC引导-0813-10000U（认证页）",
+            "中台-T0-0409后注册用户KYC引导(认证页)-0722-所有地区",
+            "中台-已注册未KYC-30日后-T45-0709",
+            "EMAIL-领奖需KYC且用户未KYC提示-下载APP并登录",
+            "EMAIL-领奖需KYC且用户未KYC提示-完成注册",
+            "中台-已注册未KYC-90日后-0716",
+            "中台-已注册未KYC-30日后-T90-0709",
+            "中台-已注册未KYC-30日后-T60-0709",
+            "中台-已注册未KYC-30日后-T45-0707",
+            "中台-已注册未KYC-D30-0709",
+            "中台-已注册未KYC-D25-0709",
+            "中台-已注册未KYC-D21-0709",
+            "中台-已注册未KYC-D17-0709",
+            "中台-已注册未KYC-D14-0709",
+            "中台-已注册未KYC-D11-0709",
+            "中台-已注册未KYC-D9-0709",
+            "中台-已注册未KYC-D7-0709",
+            "中台-已注册未KYC-D6-0709",
+            "中台-已注册未KYC-D5-0709",
+            "中台-已注册未KYC-D4-0709",
+            "中台-已注册未KYC-D3-0709",
+            "中台-已注册未KYC-D2-0709",
+            "中台-已注册未KYC-T0日-4h-0707",
+            "任务进入待审核push通知-下载APP并登录",
+            "任务进入待审核push通知-完成注册",
+            "中台-已注册未KYC-T0日-2h-0707",
+            "中台-已注册未KYC-T0日-30min-0707"
+          ],
+          "valOption": {
+            "fuzzyLikePattern": "Contain"
+          },
+          "option": {
+            "isReportFilter": true,
+            "filterPattern": "Condition"
+          }
+        },
+        {
+          "name": "is_kyc_show",
+          "id": "1694976",
+          "preRelation": "and",
+          "uniqueId": 260526113832080,
+          "op": "in",
+          "val": [
+            "未kyc"
+          ],
+          "valOption": {},
+          "option": {
+            "isReportFilter": true,
+            "isWhereInAggr": true,
+            "desensitizationList": [],
+            "displayType": "multiDropDownList",
+            "filterPattern": "Accurate",
+            "customList": []
+          }
+        }
+      ],
+      "periodCompare": [],
+      "calculation": {
+        "trendTable": {}
+      },
+      "limit": 1000,
+      "sort": {
+        "type": "sort",
+        "orderByList": [
+          {
+            "id": "countdistinct_1677741",
+            "order": "desc",
+            "uniqueId": 260410212759770
+          }
+        ]
+      },
+      "topN": null,
+      "paramList": [],
+      "cache": {
+        "cacheVersion": "V1",
+        "enable": true,
+        "expire": null
+      },
+      "enableNullJoin": false,
+      "hasDynamicField": true,
+      "isFirstScreen": false,
+      "realMetricTableRouteConfig": {
+        "isRealMetricQuery": false
+      },
+      "fabricModelInfo": {},
+      "extendQuery": []
+    },
+    "schema": {
+      "annotation": {
+        "hash": "d751713988987e9331980363e24189ce"
+      },
+      "cache": {
+        "cacheVersion": "V1",
+        "enable": true,
+        "expire": null
+      },
+      "colors": [],
+      "columns": [],
+      "customConfig": {
+        "fields": {
+          "details": []
+        }
+      },
+      "details": [],
+      "dimensions": [
+        {
+          "aggrConf": {},
+          "dimMetId": 1677704,
+          "format": {},
+          "id": "1677704",
+          "index": 0,
+          "isGeoField": false,
+          "isMetric": false,
+          "location": "dimensions",
+          "originId": "1677704",
+          "roleType": 0,
+          "type": "string",
+          "uniqueId": 260527190706398,
+          "notJoinQuery": true
+        },
+        {
+          "aggrConf": {},
+          "dimMetId": 1677720,
+          "format": {
+            "contentType": "link",
+            "displayName": "触达工具",
+            "showFieldDescr": false
+          },
+          "id": "1677720",
+          "index": 1,
+          "isGeoField": false,
+          "isMetric": false,
+          "location": "dimensions",
+          "originId": "1677720",
+          "roleType": 0,
+          "type": "string",
+          "uniqueId": 260410212760748
+        },
+        {
+          "aggrConf": {},
+          "dimMetId": 1677722,
+          "fillDate": false,
+          "format": {
+            "contentType": "link",
+            "displayName": "业务类型",
+            "showFieldDescr": false
+          },
+          "highlight": false,
+          "id": "dynamic260413161942342",
+          "index": 2,
+          "isMetric": false,
+          "location": "dimensions",
+          "originId": "1677722",
+          "pillType": "dynamic",
+          "roleType": 0,
+          "uniqueId": 260413161942342,
+          "unremovable": false,
+          "notJoinQuery": false
+        },
+        {
+          "aggrConf": {},
+          "dimMetId": 260818165248983,
+          "fillDate": false,
+          "format": {},
+          "highlight": false,
+          "id": "dynamic260413161942486",
+          "index": 3,
+          "location": "dimensions",
+          "notJoinQuery": true,
+          "originId": "260818165248983",
+          "pillType": "dynamic",
+          "roleType": 0,
+          "sourceType": "placeholder",
+          "uniqueId": 260413161942486,
+          "unremovable": false
+        },
+        {
+          "aggrConf": {},
+          "dimMetId": 260818165248984,
+          "fillDate": false,
+          "format": {},
+          "highlight": false,
+          "id": "dynamic260410212759626",
+          "index": 4,
+          "location": "dimensions",
+          "notJoinQuery": true,
+          "originId": "260818165248984",
+          "pillType": "dynamic",
+          "roleType": 0,
+          "sourceType": "placeholder",
+          "uniqueId": 260410212759626,
+          "unremovable": false
+        },
+        {
+          "aggrConf": {},
+          "dimMetId": 1677725,
+          "fillDate": false,
+          "format": {
+            "contentType": "link",
+            "displayName": "触达详情",
+            "showFieldDescr": false
+          },
+          "highlight": false,
+          "id": "dynamic260410212758216",
+          "index": 5,
+          "isMetric": false,
+          "location": "dimensions",
+          "originId": "1677725",
+          "pillType": "dynamic",
+          "roleType": 0,
+          "uniqueId": 260410212758216,
+          "unremovable": false,
+          "notJoinQuery": false
+        },
+        {
+          "aggrConf": {},
+          "dimMetId": 1677708,
+          "fillDate": false,
+          "format": {
+            "contentType": "link"
+          },
+          "highlight": false,
+          "id": "dynamic260706110251098",
+          "index": 6,
+          "isMetric": false,
+          "location": "dimensions",
+          "originId": "1677708",
+          "pillType": "dynamic",
+          "roleType": 0,
+          "uniqueId": 260706110251098,
+          "unremovable": false
+        },
+        {
+          "aggrConf": {},
+          "dimMetId": 260818165248985,
+          "fillDate": false,
+          "format": {},
+          "highlight": false,
+          "id": "dynamic260610231546085",
+          "index": 7,
+          "location": "dimensions",
+          "notJoinQuery": true,
+          "originId": "260818165248985",
+          "pillType": "dynamic",
+          "roleType": 0,
+          "sourceType": "placeholder",
+          "uniqueId": 260610231546085,
+          "unremovable": false
+        },
+        {
+          "aggrConf": {},
+          "dimMetId": 1677712,
+          "fillDate": false,
+          "format": {
+            "contentType": "link"
+          },
+          "highlight": false,
+          "id": "dynamic260714171228101",
+          "index": 8,
+          "isMetric": false,
+          "location": "dimensions",
+          "originId": "1677712",
+          "pillType": "dynamic",
+          "roleType": 0,
+          "uniqueId": 260714171228101,
+          "unremovable": false
+        },
+        {
+          "aggrConf": {},
+          "dimMetId": 1694976,
+          "fillDate": false,
+          "format": {
+            "contentType": "link"
+          },
+          "highlight": false,
+          "id": "dynamic260714171228288",
+          "index": 9,
+          "isMetric": false,
+          "location": "dimensions",
+          "originId": "1694976",
+          "pillType": "dynamic",
+          "roleType": 0,
+          "uniqueId": 260714171228288,
+          "unremovable": false
+        }
+      ],
+      "display": {
+        "conf": {
+          "alignDimension": "left",
+          "alignMeasure": "right",
+          "alternateRow": true,
+          "alternateRowColor": "#FBFBFC",
+          "autoWrap": false,
+          "bodyFontBold": false,
+          "bodyFontColor": "#141414",
+          "bodyFontItalic": false,
+          "bodyFontSize": 12,
+          "bodyFontUnderline": false,
+          "colPadding": null,
+          "colSpaceMode": "tight",
+          "columnWidth": [
+            {
+              "key": "260410212760748",
+              "value": 76
+            },
+            {
+              "key": "260410212757547",
+              "value": 76
+            },
+            {
+              "key": "260410212757654",
+              "value": 109
+            },
+            {
+              "key": "260410212757747",
+              "value": 76
+            },
+            {
+              "key": "260410212757788",
+              "value": 106
+            },
+            {
+              "key": "260410212759770",
+              "value": 94
+            },
+            {
+              "key": "260410212759918",
+              "value": 76
+            },
+            {
+              "key": "260410212515127",
+              "value": 77
+            },
+            {
+              "key": "260410212760161",
+              "value": 108
+            },
+            {
+              "key": "260410183305646",
+              "value": 96
+            },
+            {
+              "key": "260410212760342",
+              "value": 115
+            },
+            {
+              "key": "260410183305785",
+              "value": 103
+            },
+            {
+              "key": "260410212760537",
+              "value": 119
+            },
+            {
+              "key": "260410183305924",
+              "value": 107
+            }
+          ],
+          "compact": false,
+          "compactDirection": "horizontal",
+          "customFields": {
+            "enable": true
+          },
+          "display": "custom",
+          "fixedIndex": -1,
+          "gridLineColor": "#E1E4E8",
+          "gridLineFrame": true,
+          "gridLineFrameColor": null,
+          "gridLineFrameStyle": "solid",
+          "gridLineFrameWidth": 1,
+          "gridLineHorizontal": true,
+          "gridLineHorizontalColor": null,
+          "gridLineHorizontalStyle": "solid",
+          "gridLineHorizontalWidth": 1,
+          "gridLineVertical": true,
+          "gridLineVerticalColor": null,
+          "gridLineVerticalStyle": "solid",
+          "gridLineVerticalWidth": 1,
+          "headerBackground": true,
+          "headerColor": "#EEF1F5",
+          "headerFontBold": true,
+          "headerFontColor": "#1B1F23",
+          "headerFontItalic": false,
+          "headerFontSize": 12,
+          "headerFontUnderline": false,
+          "headerMenu": true,
+          "headerSubTitleFontBold": false,
+          "headerSubTitleFontColor": "rgba(20, 20, 20, 0.45)",
+          "headerSubTitleFontItalic": false,
+          "headerSubTitleFontSize": 12,
+          "headerSubTitleFontUnderline": false,
+          "hideHeader": false,
+          "hoverHighlight": "row",
+          "lineNumber": false,
+          "loadPartialData": true,
+          "measureFirst": false,
+          "pageSize": 20,
+          "pagination": false,
+          "rowPadding": null,
+          "rowSpaceMode": "loose",
+          "sortable": false,
+          "specialValue": {
+            "dimensions": "null",
+            "measures": "bracketTxt"
+          },
+          "tableStyle": "standard",
+          "transpose": false,
+          "version": 33
+        },
+        "enableAdvisor": true,
+        "queryType": "table",
+        "type": "table"
+      },
+      "drill": [],
+      "dynamicPillsMap": {
+        "dynamic260410212758216": {
+          "canEmpty": true,
+          "displayName": "触达详情",
+          "displayType": "singleTile",
+          "pillList": [
+            {
+              "aggrConf": {},
+              "dimMetId": 1677725,
+              "format": {
+                "contentType": "link",
+                "displayName": "触达详情",
+                "showFieldDescr": false
+              },
+              "highlight": false,
+              "id": "1677725",
+              "index": 0,
+              "isMetric": false,
+              "location": "dynamic_dim",
+              "notJoinQuery": false,
+              "originId": "1677725",
+              "roleType": 0,
+              "uniqueId": 260410212758227,
+              "unremovable": false
+            }
+          ],
+          "roleType": 0,
+          "selectedPillIdList": [
+            "1677725"
+          ]
+        },
+        "dynamic260410212759626": {
+          "canEmpty": true,
+          "displayName": "workflow_name",
+          "displayType": "singleTile",
+          "pillList": [
+            {
+              "aggrConf": {},
+              "dimMetId": 1677724,
+              "format": {
+                "contentType": "link",
+                "displayName": "弹窗id/金刚区位置/业务模板(可能为空值)",
+                "showFieldDescr": false
+              },
+              "highlight": false,
+              "id": "1677724",
+              "index": 0,
+              "isMetric": false,
+              "location": "dynamic_dim",
+              "notJoinQuery": false,
+              "originId": "1677724",
+              "roleType": 0,
+              "uniqueId": 260410212759643,
+              "unremovable": false
+            }
+          ],
+          "roleType": 0,
+          "selectedPillIdList": [
+            null
+          ]
+        },
+        "dynamic260413161942342": {
+          "canEmpty": true,
+          "displayName": "业务类型",
+          "displayType": "singleTile",
+          "pillList": [
+            {
+              "aggrConf": {},
+              "dimMetId": 1677722,
+              "format": {
+                "contentType": "link",
+                "displayName": "业务类型",
+                "showFieldDescr": false
+              },
+              "highlight": false,
+              "id": "1677722",
+              "index": 0,
+              "isMetric": false,
+              "location": "dynamic_dim",
+              "notJoinQuery": false,
+              "originId": "1677722",
+              "roleType": 0,
+              "uniqueId": 260413161942369,
+              "unremovable": false
+            }
+          ],
+          "roleType": 0,
+          "selectedPillIdList": [
+            "1677722"
+          ]
+        },
+        "dynamic260413161942486": {
+          "canEmpty": true,
+          "displayName": "模板",
+          "displayType": "singleTile",
+          "pillList": [
+            {
+              "aggrConf": {},
+              "dimMetId": 1677723,
+              "format": {
+                "contentType": "link",
+                "displayName": "模板",
+                "showFieldDescr": false
+              },
+              "highlight": false,
+              "id": "1677723",
+              "index": 0,
+              "isMetric": false,
+              "location": "dynamic_dim",
+              "notJoinQuery": false,
+              "originId": "1677723",
+              "roleType": 0,
+              "uniqueId": 260413161942517,
+              "unremovable": false
+            }
+          ],
+          "roleType": 0,
+          "selectedPillIdList": [
+            null
+          ]
+        },
+        "dynamic260610231546085": {
+          "canEmpty": true,
+          "displayName": "4.9前/后注册",
+          "displayType": "singleTile",
+          "pillList": [
+            {
+              "aggrConf": {},
+              "dimMetId": 1700194,
+              "format": {
+                "contentType": "link",
+                "displayName": "4.9前/后注册",
+                "showFieldDescr": false
+              },
+              "highlight": false,
+              "id": "1700194",
+              "index": 0,
+              "isMetric": false,
+              "location": "dynamic_dim",
+              "notJoinQuery": false,
+              "originId": "1700194",
+              "roleType": 0,
+              "uniqueId": 260610231546118,
+              "unremovable": false
+            }
+          ],
+          "roleType": 0,
+          "selectedPillIdList": []
+        },
+        "dynamic260706110251098": {
+          "canEmpty": true,
+          "displayName": "注册周期",
+          "displayType": "singleTile",
+          "pillList": [
+            {
+              "aggrConf": {},
+              "dimMetId": 1677708,
+              "format": {
+                "contentType": "link"
+              },
+              "highlight": false,
+              "id": "1677708",
+              "index": 0,
+              "isMetric": false,
+              "location": "dynamic_dim",
+              "notJoinQuery": false,
+              "originId": "1677708",
+              "roleType": 0,
+              "uniqueId": 260706110251141,
+              "unremovable": false
+            }
+          ],
+          "roleType": 0,
+          "selectedPillIdList": [
+            "1677708"
+          ]
+        },
+        "dynamic260714171228101": {
+          "canEmpty": true,
+          "displayType": "singleTile",
+          "pillList": [
+            {
+              "aggrConf": {},
+              "dimMetId": 1677712,
+              "format": {
+                "contentType": "link"
+              },
+              "highlight": false,
+              "id": "1677712",
+              "index": 0,
+              "isMetric": false,
+              "location": "dynamic_dim",
+              "notJoinQuery": false,
+              "originId": "1677712",
+              "roleType": 0,
+              "uniqueId": 260714171228144,
+              "unremovable": false
+            }
+          ],
+          "roleType": 0,
+          "selectedPillIdList": [
+            "1677712"
+          ]
+        },
+        "dynamic260714171228288": {
+          "canEmpty": true,
+          "displayName": "是否KYC",
+          "displayType": "singleTile",
+          "pillList": [
+            {
+              "aggrConf": {},
+              "dimMetId": 1694976,
+              "format": {
+                "contentType": "link"
+              },
+              "highlight": false,
+              "id": "1694976",
+              "index": 0,
+              "isMetric": false,
+              "location": "dynamic_dim",
+              "notJoinQuery": false,
+              "originId": "1694976",
+              "roleType": 0,
+              "uniqueId": 260714171228323,
+              "unremovable": false
+            }
+          ],
+          "roleType": 0,
+          "selectedPillIdList": [
+            "1694976"
+          ]
+        }
+      },
+      "extensions": {
+        "data": {},
+        "list": [],
+        "protocolVersion": 1
+      },
+      "measures": [
+        {
+          "aggrConf": {
+            "exprAggr": "count(distinct "
+          },
+          "dimMetId": 1677741,
+          "format": {
+            "contentType": "link",
+            "numFormat": {
+              "auto": false,
+              "kSep": true,
+              "precision": 0,
+              "precisionType": "decimalDigits",
+              "prefix": "",
+              "suffix": "",
+              "type": "digit",
+              "unit": {
+                "ratio": 1,
+                "symbol": ""
+              }
+            }
+          },
+          "id": "countdistinct_1677741",
+          "index": 0,
+          "isGeoField": false,
+          "isMetric": false,
+          "location": "measures",
+          "originId": "1677741",
+          "roleType": 1,
+          "sourceType": "aggr",
+          "type": "string",
+          "uniqueId": 260410212759770
+        },
+        {
+          "aggrConf": {
+            "exprAggr": "count(distinct "
+          },
+          "dimMetId": 1677739,
+          "format": {
+            "contentType": "link",
+            "numFormat": {
+              "auto": false,
+              "kSep": true,
+              "precision": 0,
+              "precisionType": "decimalDigits",
+              "prefix": "",
+              "suffix": "",
+              "type": "digit",
+              "unit": {
+                "ratio": 1,
+                "symbol": ""
+              }
+            }
+          },
+          "id": "countdistinct_1677739",
+          "index": 1,
+          "isGeoField": false,
+          "isMetric": false,
+          "location": "measures",
+          "originId": "1677739",
+          "roleType": 1,
+          "sourceType": "aggr",
+          "type": "string",
+          "uniqueId": 260410212759918
+        },
+        {
+          "aggrConf": {},
+          "dimMetId": 1677850,
+          "drillInfo": {},
+          "format": {
+            "dataTypeName": "float",
+            "numFormat": {
+              "auto": false,
+              "kSep": false,
+              "precision": 2,
+              "precisionType": "decimalDigits",
+              "prefix": "",
+              "suffix": "",
+              "type": "percent",
+              "unit": null
+            }
+          },
+          "id": "1677850",
+          "index": 2,
+          "isGeoField": false,
+          "isMetric": false,
+          "location": "measures",
+          "originId": "1677850",
+          "roleType": 1,
+          "type": "string",
+          "uniqueId": 260410212515127
+        },
+        {
+          "aggrConf": {
+            "exprAggr": "count(distinct "
+          },
+          "dimMetId": 1677737,
+          "format": {
+            "contentType": "link",
+            "numFormat": {
+              "auto": false,
+              "kSep": true,
+              "precision": 0,
+              "precisionType": "decimalDigits",
+              "prefix": "",
+              "suffix": "",
+              "type": "digit",
+              "unit": {
+                "ratio": 1,
+                "symbol": ""
+              }
+            }
+          },
+          "id": "countdistinct_1677737",
+          "index": 3,
+          "isGeoField": false,
+          "isMetric": false,
+          "location": "measures",
+          "originId": "1677737",
+          "roleType": 1,
+          "sourceType": "aggr",
+          "type": "string",
+          "uniqueId": 260410212760161
+        },
+        {
+          "aggrConf": {},
+          "dimMetId": 1677829,
+          "format": {
+            "dataTypeName": "float",
+            "numFormat": {
+              "auto": false,
+              "kSep": false,
+              "precision": 2,
+              "precisionType": "decimalDigits",
+              "prefix": "",
+              "suffix": "",
+              "type": "percent",
+              "unit": null
+            }
+          },
+          "id": "1677829",
+          "index": 4,
+          "isGeoField": false,
+          "isMetric": false,
+          "location": "measures",
+          "originId": "1677829",
+          "roleType": 1,
+          "type": "string",
+          "uniqueId": 260410183305646
+        },
+        {
+          "aggrConf": {
+            "exprAggr": "count(distinct "
+          },
+          "dimMetId": 1677738,
+          "format": {
+            "contentType": "link",
+            "numFormat": {
+              "auto": false,
+              "kSep": true,
+              "precision": 0,
+              "precisionType": "decimalDigits",
+              "prefix": "",
+              "suffix": "",
+              "type": "digit",
+              "unit": {
+                "ratio": 1,
+                "symbol": ""
+              }
+            }
+          },
+          "id": "countdistinct_1677738",
+          "index": 5,
+          "isGeoField": false,
+          "isMetric": false,
+          "location": "measures",
+          "originId": "1677738",
+          "roleType": 1,
+          "sourceType": "aggr",
+          "type": "string",
+          "uniqueId": 260410212760342
+        },
+        {
+          "aggrConf": {},
+          "dimMetId": 1677830,
+          "format": {
+            "dataTypeName": "float",
+            "numFormat": {
+              "auto": false,
+              "kSep": false,
+              "precision": 2,
+              "precisionType": "decimalDigits",
+              "prefix": "",
+              "suffix": "",
+              "type": "percent",
+              "unit": null
+            }
+          },
+          "id": "1677830",
+          "index": 6,
+          "isGeoField": false,
+          "isMetric": false,
+          "location": "measures",
+          "originId": "1677830",
+          "roleType": 1,
+          "type": "string",
+          "uniqueId": 260410183305785
+        },
+        {
+          "aggrConf": {
+            "exprAggr": "count(distinct "
+          },
+          "dimMetId": 1677740,
+          "format": {
+            "contentType": "link",
+            "numFormat": {
+              "auto": false,
+              "kSep": true,
+              "precision": 0,
+              "precisionType": "decimalDigits",
+              "prefix": "",
+              "suffix": "",
+              "type": "digit",
+              "unit": {
+                "ratio": 1,
+                "symbol": ""
+              }
+            }
+          },
+          "id": "countdistinct_1677740",
+          "index": 7,
+          "isGeoField": false,
+          "isMetric": false,
+          "location": "measures",
+          "originId": "1677740",
+          "roleType": 1,
+          "sourceType": "aggr",
+          "type": "string",
+          "uniqueId": 260410212760537
+        },
+        {
+          "aggrConf": {},
+          "dimMetId": 1677849,
+          "format": {
+            "dataTypeName": "float",
+            "numFormat": {
+              "auto": false,
+              "kSep": false,
+              "precision": 2,
+              "precisionType": "decimalDigits",
+              "prefix": "",
+              "suffix": "",
+              "type": "percent",
+              "unit": null
+            }
+          },
+          "id": "1677849",
+          "index": 8,
+          "isGeoField": false,
+          "isMetric": false,
+          "location": "measures",
+          "originId": "1677849",
+          "roleType": 1,
+          "type": "string",
+          "uniqueId": 260410183305924
+        },
+        {
+          "aggrConf": {
+            "exprAggr": "count(distinct "
+          },
+          "dimMetId": 1694978,
+          "format": {
+            "contentType": "link",
+            "dataTypeName": "string",
+            "numFormat": {
+              "auto": false,
+              "kSep": true,
+              "precision": 0,
+              "precisionType": "decimalDigits",
+              "prefix": "",
+              "suffix": "",
+              "type": "digit",
+              "unit": {
+                "ratio": 1,
+                "symbol": ""
+              }
+            }
+          },
+          "id": "countdistinct_1694978",
+          "index": 9,
+          "isGeoField": false,
+          "isMetric": false,
+          "location": "measures",
+          "originId": "1694978",
+          "roleType": 1,
+          "sourceType": "aggr",
+          "type": "string",
+          "uniqueId": 260526113832123
+        },
+        {
+          "aggrConf": {},
+          "dimMetId": 1694979,
+          "format": {
+            "dataTypeName": "float",
+            "numFormat": {
+              "auto": false,
+              "kSep": false,
+              "precision": 2,
+              "precisionType": "decimalDigits",
+              "prefix": "",
+              "suffix": "",
+              "type": "percent",
+              "unit": null
+            }
+          },
+          "id": "1694979",
+          "index": 10,
+          "isGeoField": false,
+          "isMetric": false,
+          "location": "measures",
+          "originId": "1694979",
+          "roleType": 1,
+          "type": "string",
+          "uniqueId": 260526113832249
+        }
+      ],
+      "measuresGroups": [],
+      "pagination": {
+        "frontOnlyOffset": 0,
+        "size": 50
+      },
+      "parameters": [],
+      "periodCompare": [],
+      "realMetricTableRouteConfig": {
+        "isRealMetricQuery": false
+      },
+      "referenceLine": [],
+      "reportFilterConfig": {
+        "layoutSize": "Normal",
+        "structType": "LeftRight"
+      },
+      "rows": [],
+      "sizes": [],
+      "sort": {
+        "orderByList": [
+          {
+            "id": "countdistinct_1677741",
+            "order": "desc",
+            "uniqueId": 260410212759770
+          }
+        ],
+        "orderByListState": [
+          {
+            "id": "countdistinct_1677741",
+            "order": "desc",
+            "uniqueId": 260410212759770
+          }
+        ],
+        "type": "sort"
+      },
+      "subMeasures": [],
+      "tableCalculation": {
+        "rules": []
+      },
+      "tooltips": [],
+      "whereList": [
+        {
+          "uniqueId": 260410183303011,
+          "id": "1677704",
+          "location": "whereList",
+          "dimMetId": 1677704,
+          "originId": "1677704",
+          "roleType": 0,
+          "aggrConf": {},
+          "format": {
+            "displayName": "活跃日期"
+          },
+          "isMetric": false,
+          "name": "p_date",
+          "unremovable": true,
+          "preRelation": "and",
+          "filter": {
+            "op": "between",
+            "val": [
+              "2026-08-12 00:00:00",
+              "2026-08-17 23:59:59"
+            ],
+            "valOption": {
+              "anchorOffset": 0,
+              "datetimeUnit": "day",
+              "hourSharp": true
+            },
+            "option": {
+              "isReportFilter": true,
+              "isWhereInAggr": true,
+              "dateMode": "absolute",
+              "isDefaultPartitionField": true
+            }
+          },
+          "dataSetId": 8745,
+          "index": 0,
+          "showEditComponent": false
+        },
+        {
+          "aggrConf": {},
+          "dataSetId": 8745,
+          "dimMetId": 1677716,
+          "filter": {
+            "op": "not in",
+            "option": {
+              "customList": [],
+              "desensitizationList": [],
+              "displayType": "multiDropDownList",
+              "filterPattern": "Accurate",
+              "isReportFilter": false,
+              "isWhereInAggr": true
+            },
+            "val": [
+              "1"
+            ],
+            "valOption": {}
+          },
+          "format": {},
+          "id": "1677716",
+          "index": 1,
+          "isMetric": false,
+          "isRequired": false,
+          "location": "whereList",
+          "name": "is_signup_risk",
+          "notJoinQuery": false,
+          "originId": "1677716",
+          "preRelation": "and",
+          "roleType": 0,
+          "showEditComponent": false,
+          "uniqueId": 260410183303540
+        },
+        {
+          "isRequired": false,
+          "uniqueId": 260410183304108,
+          "id": "1677708",
+          "location": "whereList",
+          "dimMetId": 1677708,
+          "originId": "1677708",
+          "roleType": 0,
+          "aggrConf": {},
+          "format": {
+            "contentType": "link",
+            "displayName": "注册距今时间范围"
+          },
+          "isMetric": false,
+          "name": "reg_range",
+          "preRelation": "and",
+          "filter": {
+            "op": "in",
+            "val": [
+              "注册1-7天",
+              "注册15-30天",
+              "注册30天以上",
+              "注册8-14天",
+              "注册当天"
+            ],
+            "valOption": {},
+            "option": {
+              "isReportFilter": true,
+              "isWhereInAggr": true,
+              "desensitizationList": [],
+              "customList": [],
+              "displayType": "multiDropDownList",
+              "filterPattern": "Accurate"
+            }
+          },
+          "dataSetId": 8745,
+          "index": 2,
+          "showEditComponent": false
+        },
+        {
+          "isRequired": false,
+          "uniqueId": 260410183303304,
+          "id": "1677711",
+          "location": "whereList",
+          "dimMetId": 1677711,
+          "originId": "1677711",
+          "roleType": 0,
+          "aggrConf": {},
+          "format": {
+            "contentType": "link",
+            "displayName": "端"
+          },
+          "isMetric": false,
+          "name": "platform_type",
+          "preRelation": "and",
+          "filter": {
+            "op": "in",
+            "val": [],
+            "valOption": {},
+            "option": {
+              "isReportFilter": true,
+              "isWhereInAggr": true,
+              "displayType": "multiDropDownList",
+              "filterPattern": "Accurate"
+            }
+          },
+          "dataSetId": 8745,
+          "index": 3,
+          "showEditComponent": false
+        },
+        {
+          "aggrConf": {},
+          "dataSetId": 8745,
+          "dimMetId": 1677717,
+          "filter": {
+            "op": "in",
+            "option": {
+              "customList": [],
+              "desensitizationList": [],
+              "displayType": "multiDropDownList",
+              "filterPattern": "Accurate",
+              "isReportFilter": false,
+              "isWhereInAggr": true
+            },
+            "val": [
+              null
+            ],
+            "valOption": {}
+          },
+          "format": {
+            "contentType": "link"
+          },
+          "id": "1677717",
+          "index": 4,
+          "isMetric": false,
+          "isRequired": false,
+          "location": "whereList",
+          "name": "sign_risk",
+          "notJoinQuery": false,
+          "originId": "1677717",
+          "preRelation": "and",
+          "roleType": 0,
+          "showEditComponent": false,
+          "uniqueId": 260410183303355
+        },
+        {
+          "isRequired": false,
+          "uniqueId": 260410183304445,
+          "id": "1677720",
+          "location": "whereList",
+          "dimMetId": 1677720,
+          "originId": "1677720",
+          "roleType": 0,
+          "aggrConf": {},
+          "format": {
+            "contentType": "link",
+            "displayName": "触达工具"
+          },
+          "isMetric": false,
+          "name": "function_type",
+          "preRelation": "and",
+          "filter": {
+            "op": "in",
+            "val": [],
+            "valOption": {},
+            "option": {
+              "isReportFilter": true,
+              "isWhereInAggr": true,
+              "desensitizationList": [],
+              "customList": [],
+              "displayType": "multiDropDownList",
+              "filterPattern": "Accurate"
+            }
+          },
+          "dataSetId": 8745,
+          "index": 5,
+          "showEditComponent": false
+        },
+        {
+          "isRequired": false,
+          "uniqueId": 260413161942231,
+          "id": "1677722",
+          "location": "whereList",
+          "dimMetId": 1677722,
+          "originId": "1677722",
+          "roleType": 0,
+          "aggrConf": {},
+          "format": {
+            "contentType": "link",
+            "displayName": "业务类型"
+          },
+          "isMetric": false,
+          "name": "type",
+          "preRelation": "and",
+          "filter": {
+            "op": "in",
+            "val": [],
+            "valOption": {},
+            "option": {
+              "isReportFilter": true,
+              "isWhereInAggr": true,
+              "displayType": "multiDropDownList",
+              "filterPattern": "Accurate"
+            }
+          },
+          "dataSetId": 8745,
+          "index": 6,
+          "showEditComponent": false
+        },
+        {
+          "isRequired": false,
+          "uniqueId": 260413161942904,
+          "id": "1677723",
+          "location": "whereList",
+          "dimMetId": 1677723,
+          "originId": "1677723",
+          "roleType": 0,
+          "aggrConf": {},
+          "format": {
+            "contentType": "link",
+            "displayName": "模板"
+          },
+          "isMetric": false,
+          "name": "category",
+          "preRelation": "and",
+          "filter": {
+            "op": "in",
+            "val": [],
+            "valOption": {},
+            "option": {
+              "isReportFilter": true,
+              "isWhereInAggr": true,
+              "displayType": "multiDropDownList",
+              "filterPattern": "Accurate"
+            }
+          },
+          "dataSetId": 8745,
+          "index": 7,
+          "showEditComponent": false
+        },
+        {
+          "isRequired": false,
+          "uniqueId": 260410190023103,
+          "id": "1677713",
+          "location": "whereList",
+          "dimMetId": 1677713,
+          "originId": "1677713",
+          "roleType": 0,
+          "aggrConf": {},
+          "format": {
+            "contentType": "link",
+            "displayName": "区域"
+          },
+          "isMetric": false,
+          "name": "region",
+          "preRelation": "and",
+          "filter": {
+            "op": "in",
+            "val": [],
+            "valOption": {},
+            "option": {
+              "isReportFilter": true,
+              "isWhereInAggr": true,
+              "displayType": "multiDropDownList",
+              "filterPattern": "Accurate"
+            }
+          },
+          "dataSetId": 8745,
+          "index": 8,
+          "showEditComponent": false
+        },
+        {
+          "isRequired": false,
+          "uniqueId": 260410190023237,
+          "id": "1677714",
+          "location": "whereList",
+          "dimMetId": 1677714,
+          "originId": "1677714",
+          "roleType": 0,
+          "aggrConf": {},
+          "format": {
+            "contentType": "link",
+            "displayName": "国家"
+          },
+          "isMetric": false,
+          "name": "country",
+          "preRelation": "and",
+          "filter": {
+            "op": "in",
+            "val": [],
+            "valOption": {},
+            "option": {
+              "isReportFilter": true,
+              "isWhereInAggr": true,
+              "displayType": "multiDropDownList",
+              "filterPattern": "Accurate"
+            }
+          },
+          "dataSetId": 8745,
+          "index": 9,
+          "showEditComponent": false
+        },
+        {
+          "isRequired": false,
+          "uniqueId": 260410190023324,
+          "id": "1677715",
+          "location": "whereList",
+          "dimMetId": 1677715,
+          "originId": "1677715",
+          "roleType": 0,
+          "aggrConf": {},
+          "format": {
+            "contentType": "link",
+            "displayName": "用户来源"
+          },
+          "isMetric": false,
+          "name": "user_source",
+          "preRelation": "and",
+          "filter": {
+            "op": "in",
+            "val": [],
+            "valOption": {},
+            "option": {
+              "isReportFilter": true,
+              "isWhereInAggr": true,
+              "displayType": "multiDropDownList",
+              "filterPattern": "Accurate"
+            }
+          },
+          "dataSetId": 8745,
+          "index": 10,
+          "showEditComponent": false
+        },
+        {
+          "isRequired": false,
+          "uniqueId": 260410190023413,
+          "id": "1677718",
+          "location": "whereList",
+          "dimMetId": 1677718,
+          "originId": "1677718",
+          "roleType": 0,
+          "aggrConf": {},
+          "format": {
+            "contentType": "link",
+            "displayName": "注册方式"
+          },
+          "isMetric": false,
+          "name": "reg_channel",
+          "preRelation": "and",
+          "filter": {
+            "op": "not in",
+            "val": [
+              null
+            ],
+            "valOption": {},
+            "option": {
+              "isReportFilter": true,
+              "isWhereInAggr": true,
+              "desensitizationList": [],
+              "customList": [],
+              "displayType": "multiDropDownList",
+              "filterPattern": "Accurate"
+            }
+          },
+          "dataSetId": 8745,
+          "index": 11,
+          "showEditComponent": false
+        },
+        {
+          "aggrConf": {},
+          "dataSetId": 8745,
+          "dimMetId": 1677712,
+          "filter": {
+            "op": "not in",
+            "option": {
+              "customList": [],
+              "desensitizationList": [],
+              "displayType": "multiDropDownList",
+              "filterPattern": "Accurate",
+              "isReportFilter": false,
+              "isWhereInAggr": true
+            },
+            "val": [
+              null,
+              "未注册"
+            ],
+            "valOption": {}
+          },
+          "format": {
+            "contentType": "link"
+          },
+          "id": "1677712",
+          "index": 12,
+          "isMetric": false,
+          "isRequired": false,
+          "location": "whereList",
+          "name": "uj_type",
+          "originId": "1677712",
+          "preRelation": "and",
+          "roleType": 0,
+          "showEditComponent": false,
+          "uniqueId": 260411010210081
+        },
+        {
+          "isRequired": false,
+          "uniqueId": 260527190705440,
+          "id": "1677724",
+          "location": "whereList",
+          "dimMetId": 1677724,
+          "originId": "1677724",
+          "roleType": 0,
+          "aggrConf": {},
+          "format": {
+            "contentType": "link",
+            "displayName": "流程名称"
+          },
+          "isMetric": false,
+          "name": "workflow_name",
+          "preRelation": "and",
+          "filter": {
+            "op": "in",
+            "val": [],
+            "valOption": {},
+            "option": {
+              "isReportFilter": true,
+              "isWhereInAggr": true,
+              "desensitizationList": [],
+              "customList": [],
+              "displayType": "multiDropDownList",
+              "filterPattern": "Accurate"
+            }
+          },
+          "dataSetId": 8745,
+          "index": 13,
+          "showEditComponent": false
+        },
+        {
+          "isRequired": false,
+          "uniqueId": 260411010210162,
+          "id": "1677712",
+          "location": "whereList",
+          "dimMetId": 1677712,
+          "originId": "1677712",
+          "roleType": 0,
+          "aggrConf": {},
+          "format": {
+            "contentType": "link",
+            "displayName": "uj_type"
+          },
+          "isMetric": false,
+          "name": "uj_type",
+          "preRelation": "and",
+          "filter": {
+            "op": "in",
+            "val": [
+              "注册未FTD"
+            ],
+            "valOption": {},
+            "option": {
+              "isReportFilter": true,
+              "isWhereInAggr": true,
+              "desensitizationList": [],
+              "displayType": "multiDropDownList",
+              "filterPattern": "Accurate",
+              "customList": []
+            }
+          },
+          "dataSetId": 8745,
+          "index": 14,
+          "showEditComponent": false
+        },
+        {
+          "isRequired": false,
+          "uniqueId": 260707182732098,
+          "id": "1677725",
+          "location": "whereList",
+          "dimMetId": 1677725,
+          "originId": "1677725",
+          "roleType": 0,
+          "aggrConf": {},
+          "format": {
+            "contentType": "link",
+            "displayName": "触达详情"
+          },
+          "isMetric": false,
+          "name": "detail",
+          "preRelation": "and",
+          "filter": {
+            "op": "in",
+            "val": [],
+            "valOption": {},
+            "option": {
+              "isReportFilter": true,
+              "isWhereInAggr": true,
+              "displayType": "multiDropDownList",
+              "filterPattern": "Accurate"
+            }
+          },
+          "dataSetId": 8745,
+          "index": 15,
+          "showEditComponent": false
+        },
+        {
+          "isRequired": false,
+          "uniqueId": 260413151630079,
+          "id": "1677725",
+          "location": "whereList",
+          "dimMetId": 1677725,
+          "originId": "1677725",
+          "roleType": 0,
+          "aggrConf": {},
+          "format": {
+            "contentType": "link",
+            "displayName": "触达详情"
+          },
+          "isMetric": false,
+          "name": "detail",
+          "preRelation": "and",
+          "filter": {
+            "op": "like",
+            "val": [
+              "中台-D30后-0409后注册用户KYC引导（合规素材）-0715-所有地区",
+              "中台-D15~30-0409后注册用户KYC引导（合规素材）-0715-所有地区",
+              "中台-D8~14-0409后注册用户KYC引导-0813-10000U-320U对照组（B组）",
+              "中台-D8~14-0409后注册用户KYC引导-0813-10000U-310U对照组（B组）",
+              "中台-D8~14-0409后注册用户KYC引导-0813-10000U-305U对照组（B组）",
+              "中台-D8~14-0409后注册用户KYC引导-0813（註冊＋入金320U）-上下组合（A组）",
+              "中台-D8~14-0409后注册用户KYC引导-0813（註冊＋入金310U）-上下组合（A组）",
+              "中台-D8~14-0409后注册用户KYC引导-0813（註冊＋入金305U）-上下组合（A组）",
+              "中台-D1~7-0409后注册用户KYC引导-0813-10000U（认证页）",
+              "中台-T0-0409后注册用户KYC引导(认证页)-0722-所有地区",
+              "中台-已注册未KYC-30日后-T45-0709",
+              "EMAIL-领奖需KYC且用户未KYC提示-下载APP并登录",
+              "EMAIL-领奖需KYC且用户未KYC提示-完成注册",
+              "中台-已注册未KYC-90日后-0716",
+              "中台-已注册未KYC-30日后-T90-0709",
+              "中台-已注册未KYC-30日后-T60-0709",
+              "中台-已注册未KYC-30日后-T45-0707",
+              "中台-已注册未KYC-D30-0709",
+              "中台-已注册未KYC-D25-0709",
+              "中台-已注册未KYC-D21-0709",
+              "中台-已注册未KYC-D17-0709",
+              "中台-已注册未KYC-D14-0709",
+              "中台-已注册未KYC-D11-0709",
+              "中台-已注册未KYC-D9-0709",
+              "中台-已注册未KYC-D7-0709",
+              "中台-已注册未KYC-D6-0709",
+              "中台-已注册未KYC-D5-0709",
+              "中台-已注册未KYC-D4-0709",
+              "中台-已注册未KYC-D3-0709",
+              "中台-已注册未KYC-D2-0709",
+              "中台-已注册未KYC-T0日-4h-0707",
+              "任务进入待审核push通知-下载APP并登录",
+              "任务进入待审核push通知-完成注册",
+              "中台-已注册未KYC-T0日-2h-0707",
+              "中台-已注册未KYC-T0日-30min-0707"
+            ],
+            "valOption": {
+              "fuzzyLikePattern": "Contain"
+            },
+            "option": {
+              "isReportFilter": true,
+              "filterPattern": "Condition"
+            }
+          },
+          "dataSetId": 8745,
+          "index": 16,
+          "showEditComponent": false
+        },
+        {
+          "isRequired": false,
+          "uniqueId": 260526113832080,
+          "id": "1694976",
+          "location": "whereList",
+          "dimMetId": 1694976,
+          "originId": "1694976",
+          "roleType": 0,
+          "aggrConf": {},
+          "format": {
+            "contentType": "link",
+            "displayName": "是否kyc"
+          },
+          "isMetric": false,
+          "name": "is_kyc_show",
+          "preRelation": "and",
+          "filter": {
+            "op": "in",
+            "val": [
+              "未kyc"
+            ],
+            "valOption": {},
+            "option": {
+              "isReportFilter": true,
+              "isWhereInAggr": true,
+              "desensitizationList": [],
+              "displayType": "multiDropDownList",
+              "filterPattern": "Accurate",
+              "customList": []
+            }
+          },
+          "dataSetId": 8745,
+          "index": 17,
+          "showEditComponent": false
+        }
+      ],
+      "whiteList": [
+        1677725,
+        1677724,
+        1677722,
+        1677723,
+        1700194,
+        1677708,
+        1677712,
+        1694976
+      ]
+    },
+    "display": {
+      "conf": {
+        "alignDimension": "left",
+        "alignMeasure": "right",
+        "alternateRow": true,
+        "alternateRowColor": "#FBFBFC",
+        "autoWrap": false,
+        "bodyFontBold": false,
+        "bodyFontColor": "#141414",
+        "bodyFontItalic": false,
+        "bodyFontSize": 12,
+        "bodyFontUnderline": false,
+        "colPadding": null,
+        "colSpaceMode": "tight",
+        "columnWidth": [
+          {
+            "key": "260410212760748",
+            "value": 76
+          },
+          {
+            "key": "260410212757547",
+            "value": 76
+          },
+          {
+            "key": "260410212757654",
+            "value": 109
+          },
+          {
+            "key": "260410212757747",
+            "value": 76
+          },
+          {
+            "key": "260410212757788",
+            "value": 106
+          },
+          {
+            "key": "260410212759770",
+            "value": 94
+          },
+          {
+            "key": "260410212759918",
+            "value": 76
+          },
+          {
+            "key": "260410212515127",
+            "value": 77
+          },
+          {
+            "key": "260410212760161",
+            "value": 108
+          },
+          {
+            "key": "260410183305646",
+            "value": 96
+          },
+          {
+            "key": "260410212760342",
+            "value": 115
+          },
+          {
+            "key": "260410183305785",
+            "value": 103
+          },
+          {
+            "key": "260410212760537",
+            "value": 119
+          },
+          {
+            "key": "260410183305924",
+            "value": 107
+          }
+        ],
+        "compact": false,
+        "compactDirection": "horizontal",
+        "customFields": {
+          "enable": true
+        },
+        "display": "custom",
+        "fixedIndex": -1,
+        "gridLineColor": "#E1E4E8",
+        "gridLineFrame": true,
+        "gridLineFrameColor": null,
+        "gridLineFrameStyle": "solid",
+        "gridLineFrameWidth": 1,
+        "gridLineHorizontal": true,
+        "gridLineHorizontalColor": null,
+        "gridLineHorizontalStyle": "solid",
+        "gridLineHorizontalWidth": 1,
+        "gridLineVertical": true,
+        "gridLineVerticalColor": null,
+        "gridLineVerticalStyle": "solid",
+        "gridLineVerticalWidth": 1,
+        "headerBackground": true,
+        "headerColor": "#EEF1F5",
+        "headerFontBold": true,
+        "headerFontColor": "#1B1F23",
+        "headerFontItalic": false,
+        "headerFontSize": 12,
+        "headerFontUnderline": false,
+        "headerMenu": true,
+        "headerSubTitleFontBold": false,
+        "headerSubTitleFontColor": "rgba(20, 20, 20, 0.45)",
+        "headerSubTitleFontItalic": false,
+        "headerSubTitleFontSize": 12,
+        "headerSubTitleFontUnderline": false,
+        "hideHeader": false,
+        "hoverHighlight": "row",
+        "lineNumber": false,
+        "loadPartialData": true,
+        "measureFirst": false,
+        "pageSize": 20,
+        "pagination": false,
+        "rowPadding": null,
+        "rowSpaceMode": "loose",
+        "sortable": false,
+        "specialValue": {
+          "dimensions": "null",
+          "measures": "bracketTxt"
+        },
+        "tableStyle": "standard",
+        "transpose": false,
+        "version": 33
+      },
+      "enableAdvisor": true,
+      "queryType": "table",
+      "type": "table",
+      "fieldsFormat": {
+        "1677704": {},
+        "1677720": {
+          "contentType": "link",
+          "displayName": "触达工具",
+          "showFieldDescr": false
+        },
+        "1677829": {
+          "dataTypeName": "float",
+          "numFormat": {
+            "auto": false,
+            "kSep": false,
+            "precision": 2,
+            "precisionType": "decimalDigits",
+            "prefix": "",
+            "suffix": "",
+            "type": "percent",
+            "unit": null
+          }
+        },
+        "1677830": {
+          "dataTypeName": "float",
+          "numFormat": {
+            "auto": false,
+            "kSep": false,
+            "precision": 2,
+            "precisionType": "decimalDigits",
+            "prefix": "",
+            "suffix": "",
+            "type": "percent",
+            "unit": null
+          }
+        },
+        "1677849": {
+          "dataTypeName": "float",
+          "numFormat": {
+            "auto": false,
+            "kSep": false,
+            "precision": 2,
+            "precisionType": "decimalDigits",
+            "prefix": "",
+            "suffix": "",
+            "type": "percent",
+            "unit": null
+          }
+        },
+        "1677850": {
+          "dataTypeName": "float",
+          "numFormat": {
+            "auto": false,
+            "kSep": false,
+            "precision": 2,
+            "precisionType": "decimalDigits",
+            "prefix": "",
+            "suffix": "",
+            "type": "percent",
+            "unit": null
+          }
+        },
+        "1694979": {
+          "dataTypeName": "float",
+          "numFormat": {
+            "auto": false,
+            "kSep": false,
+            "precision": 2,
+            "precisionType": "decimalDigits",
+            "prefix": "",
+            "suffix": "",
+            "type": "percent",
+            "unit": null
+          }
+        },
+        "dynamic260413161942342": {
+          "contentType": "link",
+          "displayName": "业务类型",
+          "showFieldDescr": false
+        },
+        "dynamic260413161942486": {},
+        "dynamic260410212759626": {},
+        "dynamic260410212758216": {
+          "contentType": "link",
+          "displayName": "触达详情",
+          "showFieldDescr": false
+        },
+        "dynamic260706110251098": {
+          "contentType": "link"
+        },
+        "dynamic260610231546085": {},
+        "dynamic260714171228101": {
+          "contentType": "link"
+        },
+        "dynamic260714171228288": {
+          "contentType": "link"
+        },
+        "countdistinct_1677741": {
+          "contentType": "link",
+          "numFormat": {
+            "auto": false,
+            "kSep": true,
+            "precision": 0,
+            "precisionType": "decimalDigits",
+            "prefix": "",
+            "suffix": "",
+            "type": "digit",
+            "unit": {
+              "ratio": 1,
+              "symbol": ""
+            }
+          }
+        },
+        "countdistinct_1677739": {
+          "contentType": "link",
+          "numFormat": {
+            "auto": false,
+            "kSep": true,
+            "precision": 0,
+            "precisionType": "decimalDigits",
+            "prefix": "",
+            "suffix": "",
+            "type": "digit",
+            "unit": {
+              "ratio": 1,
+              "symbol": ""
+            }
+          }
+        },
+        "countdistinct_1677737": {
+          "contentType": "link",
+          "numFormat": {
+            "auto": false,
+            "kSep": true,
+            "precision": 0,
+            "precisionType": "decimalDigits",
+            "prefix": "",
+            "suffix": "",
+            "type": "digit",
+            "unit": {
+              "ratio": 1,
+              "symbol": ""
+            }
+          }
+        },
+        "countdistinct_1677738": {
+          "contentType": "link",
+          "numFormat": {
+            "auto": false,
+            "kSep": true,
+            "precision": 0,
+            "precisionType": "decimalDigits",
+            "prefix": "",
+            "suffix": "",
+            "type": "digit",
+            "unit": {
+              "ratio": 1,
+              "symbol": ""
+            }
+          }
+        },
+        "countdistinct_1677740": {
+          "contentType": "link",
+          "numFormat": {
+            "auto": false,
+            "kSep": true,
+            "precision": 0,
+            "precisionType": "decimalDigits",
+            "prefix": "",
+            "suffix": "",
+            "type": "digit",
+            "unit": {
+              "ratio": 1,
+              "symbol": ""
+            }
+          }
+        },
+        "countdistinct_1694978": {
+          "contentType": "link",
+          "dataTypeName": "string",
+          "numFormat": {
+            "auto": false,
+            "kSep": true,
+            "precision": 0,
+            "precisionType": "decimalDigits",
+            "prefix": "",
+            "suffix": "",
+            "type": "digit",
+            "unit": {
+              "ratio": 1,
+              "symbol": ""
+            }
+          }
+        }
+      }
+    },
+    "requestId": "aeolus.dashboard.AveryB.app_2.dashboard_40450.sheet_14003.report_287596.dataset_8745.componentId_b26fc663-5dda-445d-8090-a083d246b05e.queryScene_dashboard.6f44014b-9518-4d0d-9818-cf7081058de4",
+    "dashboardId": 40450,
+    "switchConf": {
+      "dashboardId": 40450,
+      "waitForDataReady": 0
+    }
+  }
+}

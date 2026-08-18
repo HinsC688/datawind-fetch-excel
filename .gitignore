@@ -1,3 +1,4 @@
 .DS_Store
 artifacts/
 __pycache__/
+artifacts/.tmp/
