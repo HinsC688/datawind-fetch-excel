@@ -242,11 +242,15 @@ def main():
         if tab_config.get("needs_row_insert") and not args.start_row:
             print(f"  ⚠️  该tab需要先插入行（App区块末尾第{tab_config['app_block_last_row']}行之后，"
                   f"第{tab_config['web_header_row']}行是'Web/H5'标题，不能覆盖）")
-            print(f"      插入命令：npx --yes @larksuite/cli@latest sheets +dim-insert \\")
-            print(f"        --spreadsheet-token {token} --sheet-id {tab_config['sheet_id']} \\")
-            print(f"        --major-dimension ROWS --start-index {tab_config['blank_separator_row']} "
-                  f"--end-index {tab_config['blank_separator_row'] + len(tab_config['rows']) + 1}")
-            print(f"      插入后用 --start-row 指定实际起始行再跑一次")
+            insert_count = len(tab_config["rows"]) + 1
+            insert_at = tab_config["blank_separator_row"]
+            print(f"      插入命令（--inherit-style before 会继承前一行数据行的样式，"
+                  f"这样百分比/千位分隔符格式自动带上，见坑#19）：")
+            print(f"        npx --yes @larksuite/cli@latest sheets +dim-insert \\")
+            print(f"          --spreadsheet-token {token} --sheet-id {tab_config['sheet_id']} \\")
+            print(f"          --position {insert_at} --count {insert_count} --inherit-style before")
+            print(f"      插完数据行是 {insert_at + 1}~{insert_at + len(tab_config['rows'])}，"
+                  f"用 --start-row {insert_at + 1} 再跑一次")
             start_row = None
 
         if missing:
