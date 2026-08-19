@@ -81,7 +81,7 @@ bash scripts/open-chrome.sh   # 打开独立CDP Chrome，自动导航到目标�
 ```bash
 cd "/Users/newair/Desktop/datawind fetch excel"
 python3 scripts/capture-datawind-requests.py \
-  --dashboard-id 41204 --no-reload --seconds 300 \
+  --dashboard-id 41204 --no-reload --seconds 120 \
   --prefix push-YYYYMMDD-YYYYMMDD
 ```
 只有终端显示 `Listening now...` 后，才回到 Chrome 设置目标周的 `p_date` 绝对日期范围（不能用"最近7天"等相对筛选）。**DataWind 每一次筛选操作都会自动刷新并发起查询**，因此监听必须先于所有筛选；不要预先设置好日期再启动监听，也不必额外点击刷新。等待脚本结束后，保存的时间戳/前缀响应文件就是本次抓取结果。
