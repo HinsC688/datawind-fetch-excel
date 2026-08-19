@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate one complete Push weekly DataWind capture against a Lark template."""
+"""Validate one complete Push weekly DataWind capture against approved targets."""
 import argparse
 import csv
 import json
@@ -19,6 +19,11 @@ def template_rows(path):
         if cells[2].strip():
             rows.append((row, flow, cells[2].strip()))
     return rows
+
+
+def planned_targets(path):
+    data = json.loads(path.read_text())
+    return [(flow["workflow_name"], task) for flow in data["targets"] for task in flow["task_names"]]
 
 
 def selected_response(path, start, end):
@@ -48,20 +53,21 @@ def main():
     parser.add_argument("--response", type=Path, required=True)
     parser.add_argument("--start", required=True)
     parser.add_argument("--end", required=True)
+    parser.add_argument("--targets", type=Path, help="Strategy-adjusted target plan JSON.")
     args = parser.parse_args()
+    requested = planned_targets(args.targets) if args.targets else [(flow, task) for _, flow, task in template_rows(args.template)]
     _, viz = selected_response(args.response, args.start, args.end)
     ids = {name: key for key, name in viz["aliasMap"].items()}
     keys = [(row.get(ids["workflow_name"]), row.get(ids["task_name"])) for row in viz["datasets"]]
     counts = Counter(key for key in keys if all(key))
-    missing = [(row, flow, task) for row, flow, task in template_rows(args.template) if (flow, task) not in counts]
-    targets = {(flow, task) for _, flow, task in template_rows(args.template)}
-    duplicates = [key for key in targets if counts[key] > 1]
-    print(f"Selected complete capture: {len(viz['datasets'])} datasets; template targets: {len(template_rows(args.template))}")
-    print(f"Matched: {len(template_rows(args.template)) - len(missing)}; missing: {len(missing)}; duplicate target keys: {len(duplicates)}")
+    missing = [key for key in requested if key not in counts]
+    duplicates = [key for key in requested if counts[key] > 1]
+    print(f"Selected complete capture: {len(viz['datasets'])} datasets; requested targets: {len(requested)}")
+    print(f"Matched: {len(requested) - len(missing)}; missing: {len(missing)}; duplicate target keys: {len(duplicates)}")
     if missing:
-        print("Missing:\n" + "\n".join(f"row {r}: {f} / {t}" for r, f, t in missing))
+        print("Missing:\n" + "\n".join(f"{flow} / {task}" for flow, task in missing))
     if duplicates:
-        print("Duplicate target keys:\n" + "\n".join(f"{f} / {t}" for f, t in duplicates))
+        print("Duplicate target keys:\n" + "\n".join(f"{flow} / {task}" for flow, task in duplicates))
     if missing or duplicates:
         raise SystemExit("Capture cannot be used for writing.")
 

@@ -48,6 +48,7 @@ def main():
     parser.add_argument("--end", required=True)
     parser.add_argument("--period-label", required=True)
     parser.add_argument("--row-offset", type=int, help="Optional override; default finds the first empty row in every six-row block.")
+    parser.add_argument("--targets", type=Path, help="Strategy-adjusted target plan JSON.")
     parser.add_argument("--spreadsheet-token", required=True)
     parser.add_argument("--sheet-id", required=True)
     parser.add_argument("--apply", action="store_true")
@@ -58,8 +59,13 @@ def main():
     required = {"workflow_name", "task_name", *METRICS}
     if missing := required - ids.keys():
         raise SystemExit(f"Missing response fields: {sorted(missing)}")
-    targets = validator.template_rows(args.template)
-    wanted = {(flow, task) for _, flow, task in targets}
+    locations = {(flow, task): base for base, flow, task in validator.template_rows(args.template)}
+    requested = validator.planned_targets(args.targets) if args.targets else list(locations)
+    missing_blocks = [key for key in requested if key not in locations]
+    if missing_blocks:
+        raise SystemExit("New strategy targets need formatted task blocks in push数据 before writing:\n" + "\n".join(f"{flow} / {task}" for flow, task in missing_blocks))
+    targets = [(locations[(flow, task)], flow, task) for flow, task in requested]
+    wanted = set(requested)
     rows_by_key = {}
     for row in viz["datasets"]:
         key = (row.get(ids["workflow_name"]), row.get(ids["task_name"]))
