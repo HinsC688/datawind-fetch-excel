@@ -62,10 +62,14 @@ def main():
     if not args.apply:
         return
     for row, task, values in plan:
-        cells = [[{"value": args.period_label}, {"value": task}, *({"value": value} for value in values)]]
-        command = ["npx", "--yes", "@larksuite/cli@latest", "sheets", "+cells-set", "--spreadsheet-token", args.spreadsheet_token, "--sheet-id", args.sheet_id, "--range", f"B{row}:H{row}", "--cells", json.dumps(cells, ensure_ascii=False)]
-        print(f"Writing row {row}")
-        subprocess.run(command, check=True)
+        if args.row_offset:
+            writes = [(f"B{row}:B{row}", [[{"value": args.period_label}]]), (f"D{row}:H{row}", [[*({"value": value} for value in values)]])]
+        else:
+            writes = [(f"B{row}:H{row}", [[{"value": args.period_label}, {"value": task}, *({"value": value} for value in values)]])]
+        for cell_range, cells in writes:
+            command = ["npx", "--yes", "@larksuite/cli@latest", "sheets", "+cells-set", "--spreadsheet-token", args.spreadsheet_token, "--sheet-id", args.sheet_id, "--range", cell_range, "--cells", json.dumps(cells, ensure_ascii=False)]
+            print(f"Writing {cell_range}")
+            subprocess.run(command, check=True)
 
 
 if __name__ == "__main__":
