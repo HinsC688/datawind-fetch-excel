@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Dry-run or write one complete Push weekly period to the copied Lark template."""
 import argparse
+import csv
 import importlib.util
 import json
+import re
 import subprocess
-from collections import Counter
 from pathlib import Path
 
 METRICS = ["曝光用户数的日均", "点击用户数的日均", "曝光点击率", "注册转化率", "注册转化用户数"]
@@ -23,6 +24,22 @@ def number(value):
     return int(value) if value.is_integer() else value
 
 
+def next_rows(path, base_rows, forced_offset):
+    rows = {}
+    for raw in json.loads(path.read_text())["annotated_csv"].splitlines()[1:]:
+        match = re.match(r"^\[row=(\d+)\]\s*(.*)$", raw)
+        if match:
+            rows[int(match.group(1))] = next(csv.reader([match.group(2)]))
+    selected = {}
+    for base in base_rows:
+        candidates = [base + forced_offset] if forced_offset is not None else range(base, base + 6)
+        row = next((candidate for candidate in candidates if candidate in rows and not rows[candidate][1].strip() and not any(rows[candidate][column].strip() for column in range(3, 8))), None)
+        if row is None:
+            raise SystemExit(f"No empty weekly row available for template block beginning at row {base}")
+        selected[base] = row
+    return selected
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--template", type=Path, required=True)
@@ -30,7 +47,7 @@ def main():
     parser.add_argument("--start", required=True)
     parser.add_argument("--end", required=True)
     parser.add_argument("--period-label", required=True)
-    parser.add_argument("--row-offset", type=int, required=True)
+    parser.add_argument("--row-offset", type=int, help="Optional override; default finds the first empty row in every six-row block.")
     parser.add_argument("--spreadsheet-token", required=True)
     parser.add_argument("--sheet-id", required=True)
     parser.add_argument("--apply", action="store_true")
@@ -51,21 +68,21 @@ def main():
     invalid = [key for key in wanted if len(rows_by_key.get(key, [])) != 1]
     if invalid:
         raise SystemExit(f"Expected one row per target; invalid keys: {invalid}")
+    destinations = next_rows(args.template, [base for base, _, _ in targets], args.row_offset)
     plan = []
-    for base_row, flow, task in targets:
-        data = rows_by_key[(flow, task)][0]
-        values = [number(data[ids[metric]]) for metric in METRICS]
-        plan.append((base_row + args.row_offset, task, values))
+    for base, flow, task in targets:
+        values = [number(rows_by_key[(flow, task)][0][ids[metric]]) for metric in METRICS]
+        plan.append((base, destinations[base], task, values))
     print(f"{'APPLY' if args.apply else 'DRY-RUN'} {args.period_label}: {len(plan)} rows")
-    for row, task, values in plan:
-        print(f"row {row}: {args.period_label} | {task} | {values}")
+    for base, row, task, values in plan:
+        print(f"row {row} (block {base}): {args.period_label} | {task} | {values}")
     if not args.apply:
         return
-    for row, task, values in plan:
-        if args.row_offset:
-            writes = [(f"B{row}:B{row}", [[{"value": args.period_label}]]), (f"D{row}:H{row}", [[*({"value": value} for value in values)]])]
-        else:
+    for base, row, task, values in plan:
+        if row == base:
             writes = [(f"B{row}:H{row}", [[{"value": args.period_label}, {"value": task}, *({"value": value} for value in values)]])]
+        else:
+            writes = [(f"B{row}:B{row}", [[{"value": args.period_label}]]), (f"D{row}:H{row}", [[*({"value": value} for value in values)]])]
         for cell_range, cells in writes:
             command = ["npx", "--yes", "@larksuite/cli@latest", "sheets", "+cells-set", "--spreadsheet-token", args.spreadsheet_token, "--sheet-id", args.sheet_id, "--range", cell_range, "--cells", json.dumps(cells, ensure_ascii=False)]
             print(f"Writing {cell_range}")
