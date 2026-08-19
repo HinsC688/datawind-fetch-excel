@@ -75,14 +75,16 @@
 cd "/Users/newair/Desktop/datawind fetch excel"
 bash scripts/open-chrome.sh   # 打开独立CDP Chrome，自动导航到目标看板
 ```
-然后在弹出的 Chrome 里登录 DataWind，进入 Push 任务明细表，把时间筛选设置为目标周（比如 W31 是 2026-08-03~08-09，注意用绝对日期筛选，不要用"最近7天"之类的相对筛选，否则周期会随时间漂移，见坑 #4）。
+在弹出的 Chrome 登录 DataWind 并进入 Push 任务明细表即可；**不要在启动监听前修改任何筛选条件**。
 
-开新终端窗口：
+开新终端窗口，**先启动监听**：
 ```bash
 cd "/Users/newair/Desktop/datawind fetch excel"
-python3 scripts/capture-datawind-requests.py --no-reload --seconds 120
+python3 scripts/capture-datawind-requests.py \
+  --dashboard-id 41204 --no-reload --seconds 300 \
+  --prefix push-YYYYMMDD-YYYYMMDD
 ```
-看到 `Listening now...` 提示后，回到 Chrome 点击表格刷新，等待脚本自动结束（120秒）。
+只有终端显示 `Listening now...` 后，才回到 Chrome 设置目标周的 `p_date` 绝对日期范围（不能用"最近7天"等相对筛选）。**DataWind 每一次筛选操作都会自动刷新并发起查询**，因此监听必须先于所有筛选；不要预先设置好日期再启动监听，也不必额外点击刷新。等待脚本结束后，保存的时间戳/前缀响应文件就是本次抓取结果。
 
 结果会保存为：
 ```
