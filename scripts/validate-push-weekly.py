@@ -30,10 +30,12 @@ def selected_response(path, start, end):
         body, post = item.get("body", {}), json.loads(item.get("post_data", "{}"))
         data = body.get("data", {})
         viz, query = data.get("vizData", {}), post.get("query", {})
+        def has_filter(name, value):
+            return any(w.get("name") == name and value in (w.get("val") or []) for w in query.get("whereList", []))
         dates = any(w.get("name") == "p_date" and w.get("op") == "between" and w.get("val") == wanted for w in query.get("whereList", []))
         aliases = set(viz.get("aliasMap", {}).values())
         total, limit = data.get("total"), query.get("limit")
-        if dates and {"workflow_name", "task_name"} <= aliases and isinstance(total, int) and total < limit:
+        if dates and has_filter("push_type", "apppush") and has_filter("UJ生命周期", "未注册") and {"workflow_name", "task_name"} <= aliases and isinstance(total, int) and total < limit:
             candidates.append((item, viz))
     if len(candidates) != 1:
         raise SystemExit(f"Expected one complete Push query for {start}~{end}; found {len(candidates)}")
