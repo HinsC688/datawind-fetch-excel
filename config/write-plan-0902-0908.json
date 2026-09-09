@@ -3,7 +3,7 @@
   "spreadsheet_token": "Wmq4s0mJHh3HZ7tITvbu261ZsFb",
   "period_label": "0902-0908",
   "capture": {
-    "file": "",
+    "file": "artifacts/20260909T160507-response-bodies.json",
     "date_start": "2026-09-02",
     "date_end": "2026-09-08",
     "_选取规则": "取带 detail 筛选、未被 limit 截断、维度不含 p_date 且 (触达工具,触达详情,reg_range) 唯一键无重复的 vizQuery 请求"
