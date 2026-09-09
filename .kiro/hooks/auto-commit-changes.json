@@ -1,0 +1,15 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "自动提交代码修改",
+      "description": "每次Kiro完成一轮代码修改后自动提交；网络不可达时保留本地提交，待网络恢复后再推送。",
+      "trigger": "Stop",
+      "action": {
+        "type": "command",
+        "command": "cd \"/Users/newair/Desktop/datawind fetch excel\" && git add -A && (git diff --cached --quiet || git commit -m \"auto: $(date '+%Y-%m-%d %H:%M:%S')\") && (git push origin main || printf 'GitHub暂不可达：改动已完成本地提交，将在网络恢复后的下次自动推送时同步。\\n' >&2)"
+      },
+      "enabled": true
+    }
+  ]
+}

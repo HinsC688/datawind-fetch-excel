@@ -25,6 +25,20 @@ from pathlib import Path
 CONFIG_PATH = Path("config/write-plan-0812-0817.json")
 QUERY_MARKER = "vizQuery/query"
 
+# 2026-09-02 新增：同一个 (触达工具,触达详情,reg_range) 有时会被 DataWind 按
+# "业务类型" 拆成多行（同一任务在周期内被打了不同的业务类型标签，属于正常业务口径，
+# 不是坑#17那种因未命名维度导致的碎片）。这种情况下要把绝对数值字段求和，
+# 比率字段按分子/分母重新计算，不能直接对比率取值或覆盖。
+# 分母字段来自实际验证：点击率=点击用户/曝光用户；其余"24hXX率"=对应24h指标/点击用户。
+RATE_FORMULAS = {
+    "点击率": ("点击用户", "曝光用户"),
+    "24h内FTD率": ("触达24h内FTD", "点击用户"),
+    "24h内eFTD率": ("触达24h内eFTD", "点击用户"),
+    "24h内eFTTc率": ("触达24h内eFTTc", "点击用户"),
+    "24h内kyc率": ("触达24h内kyc", "点击用户"),
+}
+COUNT_FIELDS = ["曝光用户", "点击用户", "触达24h内FTD", "触达24h内eFTD", "触达24h内eFTTc", "触达24h内kyc"]
+
 
 def column_index(letter):
     result = 0
@@ -54,6 +68,12 @@ def pick_query(capture_path, date_start, date_end):
     最后这条最关键：界面上筛选的渐进过程中，有些请求会多带一个未命名维度，
     导致同一个业务记录被拆成多行，直接按唯一键取数会取到碎片值。
     要求唯一键不重复，就能排除这类请求。
+
+    2026-09-02 更新：发现同一个 (触达工具,触达详情,reg_range) 有时会被 DataWind
+    按"业务类型"合法拆成多行（同一任务在周期内被打了不同业务类型标签，用户已确认
+    这是正常口径，下游 build_lookup() 会按业务类型分组求和/重算比率合并）。
+    所以这里的重复检测改成按 (触达工具,触达详情,reg_range,业务类型) 四元组去查重，
+    这样仍能拦住坑#17那种因未命名维度导致的碎片请求，又不会误杀合法的业务类型拆分。
     """
     bodies = json.loads(Path(capture_path).read_text(encoding="utf-8"))
     candidates, rejected = [], []
@@ -88,16 +108,21 @@ def pick_query(capture_path, date_start, date_end):
         if not (has_detail and date_ok and not has_p_date_dim and not truncated and rows):
             continue
 
-        # 唯一键去重检查
+        # 唯一键去重检查：(触达工具,触达详情,reg_range,业务类型) 四元组不重复即可。
+        # 业务类型也纳入键是因为同一任务在周期内可能合法地被打上不同业务类型标签
+        # （2026-09-02发现，用户已确认按业务类型分组求和是正确口径），
+        # 这种情况不应被当成坑#17的碎片请求拦掉；但三元组内仍不能有更细的重复。
         alias = viz.get("aliasMap") or {}
         key_ids = {}
         for uid, label in alias.items():
             key_ids.setdefault("".join(str(label).split()), uid)
         try:
             ids = [key_ids[name] for name in ("触达工具", "触达详情", "reg_range")]
+            biz_uid = key_ids.get("业务类型")
         except KeyError:
             continue
-        composites = [tuple(row.get(uid) for uid in ids) for row in rows]
+        dedupe_ids = ids + ([biz_uid] if biz_uid else [])
+        composites = [tuple(row.get(uid) for uid in dedupe_ids) for row in rows]
         duplicates = len(composites) - len(set(composites))
         if duplicates:
             rejected.append((index, len(rows), duplicates))
@@ -119,7 +144,12 @@ def pick_query(capture_path, date_start, date_end):
 
 
 def build_lookup(viz):
-    """按 (触达工具, 触达详情, reg_range) 建索引，字段名动态反查。"""
+    """按 (触达工具, 触达详情, reg_range) 建索引，字段名动态反查。
+
+    2026-09-02 新增：同一个唯一键如果被"业务类型"拆成多行（同一任务在周期内
+    被打了不同业务类型标签，属于正常口径），这里会把绝对数值字段求和、
+    比率字段按分子/分母重新计算，合并成一行再放进索引（用户已确认这样处理）。
+    """
     alias = viz.get("aliasMap") or {}
     name_to_id = {}
     for uid, label in alias.items():
@@ -133,12 +163,44 @@ def build_lookup(viz):
         return name_to_id[key]
 
     keys = {name: field(name) for name in ("触达工具", "触达详情", "reg_range")}
-    lookup = {}
+    grouped = {}
     for row in viz.get("datasets") or []:
         if not isinstance(row, dict):
             continue
         composite = tuple(row.get(keys[name]) for name in ("触达工具", "触达详情", "reg_range"))
-        lookup[composite] = row
+        grouped.setdefault(composite, []).append(row)
+
+    lookup = {}
+    merged_report = []
+    for composite, rows in grouped.items():
+        if len(rows) == 1:
+            lookup[composite] = rows[0]
+            continue
+        merged = dict(rows[0])  # 保留非数值字段（如业务类型，取第一条，不用于写入）
+        for count_name in COUNT_FIELDS:
+            try:
+                uid = field(count_name)
+            except SystemExit:
+                continue
+            total = sum(to_number(row.get(uid)) or 0 for row in rows)
+            merged[uid] = total
+        for rate_name, (numerator_name, denominator_name) in RATE_FORMULAS.items():
+            try:
+                rate_uid = field(rate_name)
+                num_uid = field(numerator_name)
+                den_uid = field(denominator_name)
+            except SystemExit:
+                continue
+            denominator = merged.get(den_uid) or 0
+            merged[rate_uid] = (merged.get(num_uid) or 0) / denominator if denominator else 0
+        lookup[composite] = merged
+        merged_report.append((composite, len(rows)))
+
+    if merged_report:
+        print(f"ℹ️  {len(merged_report)} 个唯一键在本次抓取里按业务类型拆成了多行，已合并累加（用户已确认口径）：")
+        for composite, count in merged_report:
+            print(f"      {composite} ×{count}")
+
     return lookup, field
 
 
@@ -210,6 +272,10 @@ def write_row(token, sheet_id, first, last, row_number, values, apply_changes):
         print(f"   ❌ 第{row_number}行写入失败: {result.stderr.strip()[:300]}")
         return False
     return True
+
+
+def is_merged_region_error(stderr_text):
+    return "inside a merged region" in stderr_text
 
 
 def main():
@@ -284,10 +350,21 @@ def main():
             print("  ⏭️  起始行未确定，跳过写入")
             continue
 
+        # 2026-09-02 新增：A 列(period_label)在整组行里是纵向合并单元格
+        # （跟坑#22类似情况：只有组内第一行能写这一列，非首行写A会被飞书拒绝
+        # "inside a merged region"）。做法：offset==0 正常写 first~last；
+        # offset>0 时把写入范围起点从 first 挪到第二列，跳过合并的 A 列。
+        merged_first_col = tab_config["column_layout"].get(first) == "period_label"
+        second = letters[1] if len(letters) > 1 else first
+
         ok = 0
         for offset, values in prepared:
             row_number = start_row + offset
-            if write_row(token, tab_config["sheet_id"], first, last, row_number, values, True):
+            if offset > 0 and merged_first_col:
+                success = write_row(token, tab_config["sheet_id"], second, last, row_number, values[1:], True)
+            else:
+                success = write_row(token, tab_config["sheet_id"], first, last, row_number, values, True)
+            if success:
                 ok += 1
                 print(f"   ✅ 已写入第 {row_number} 行")
         print(f"  写入完成: {ok}/{len(prepared)} 行成功")
