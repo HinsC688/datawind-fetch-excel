@@ -25,7 +25,13 @@ python3 -c "import websocket; print(websocket.__version__)"
 npx --yes @larksuite/cli@latest --version
 ```
 
-**关于网络环境**：如果 DataWind 是内网系统（需要 VPN 才能访问），而飞书/GitHub 走的是另一套代理，先搞清楚这两套网络能不能同时连接。如果不能同时连（本项目就是这种情况，FortiVPN 和 Clash 互斥），整个流程必须设计成两个独立阶段，中间用本地文件传递数据，不能设计成一个脚本里同时做"抓取+写入"。这是决定整体架构的关键前提，先确认清楚再往下走。
+**关于网络环境：先按操作者的真实所在地和实际连通性做决定，不要默认一定要开代理或一定要切网。**
+
+- **操作者真实位于中国大陆，且 Kiro CLI、飞书、GitHub 等必需公网服务需要 Clash 才能访问**：DataWind 仍走 FortiClient。若希望在同一台 Mac 上持续运行 kiro-cli（包括经 Tailscale 的远端 SSH），需要让 Clash 的 Mihomo TUN/虚拟网卡模式与 FortiClient 共存：Clash TUN 接管命令行的公网代理流量，FortiClient 保留公司内网/DataWind 路由。启用后必须分别验证 DataWind、Kiro、飞书 CLI 和远端 SSH/Tailscale；不要硬编码临时 `utun` 接口编号，因为重连后会变化。
+- **操作者真实位于其他国家或地区，且上述公网服务可直接访问**：不需要为了本项目开启 Clash，因此只需 FortiClient 访问 DataWind，**不存在 Clash 与 FortiClient 的共存问题**。
+- **无法稳定共存或某项连通性校验失败**：采用保守的两阶段方案——Forti 环境只抓取并保存本地时间戳 artifacts；能访问飞书的网络环境再校验和写入。不要设计单个脚本在网络切换点同时做“抓取+写入”。
+
+这是决定整体架构的关键前提，先确认清楚再往下走。
 
 ---
 
@@ -232,14 +238,50 @@ npx --yes @larksuite/cli@latest sheets +cells-set \
 
 ---
 
-## 6. 处理网络环境切换（如果适用）
+## 6. 网络、远端执行与回退策略（如果适用）
 
-如果 DataWind 和飞书处于互斥的网络环境（类似本项目 FortiVPN vs Clash 的情况），整体执行顺序固定为：
+### 6.1 先按所在地决定是否需要代理共存
 
-1. **网络环境A（能访问 DataWind）**：只做抓取，产出本地时间戳文件，不涉及任何飞书调用。
-2. **切换到网络环境B（能访问飞书）**：只做匹配和写入，读取上一步产出的本地文件，不涉及任何 DataWind 调用。
+不要把“Forti 与 Clash 必然互斥”当成固定前提。应先判断操作者真实所在地及必需服务的实际连通性：
 
-两个阶段之间用文件系统传递数据，脚本设计上要求"单阶段脚本只依赖一种网络环境"，这样切换网络时不会让脚本莫名其妙失败，方便用户按自己的网络状态选择要跑哪一段。
+- **中国大陆且 Kiro CLI / 飞书 / GitHub 等服务需要 Clash**：若同一台 Mac 还要经 FortiClient 访问 DataWind，公司内网与公网代理必须共存。使用 Clash/Mihomo TUN 使命令行流量进入 Clash，同时由 FortiClient 保留 DataWind/公司内网路由；私网、局域网和 Tailscale 管理流量按实际网络策略绕过 TUN。不要硬编码 `utun` 接口编号，因 VPN/TUN 重连后编号会变化。
+- **其他国家或地区且 Kiro CLI / 飞书 / GitHub 可直接访问**：不要为了本项目额外开启 Clash。只连接 FortiClient 访问 DataWind 即可，Clash 与 Forti 的共存问题不会出现。
+- **任意地点，只要共存后有一项服务异常**：关闭或回退冲突的一方，使用第 6.3 节的两阶段方案，不要在不稳定网络上强行执行生产写入。
+
+启用或调整 TUN 后，必须在正式流程前逐项验证：
+
+```bash
+# Forti/DataWind 路径
+curl -s -o /dev/null -w "DataWind HTTP %{http_code}\n" --connect-timeout 8 https://datawind.xiaoxiame.com
+
+# Kiro 云端路径（如使用 kiro-cli）
+curl -s -o /dev/null -w "Kiro HTTP %{http_code}\n" --connect-timeout 8 https://kiro.dev
+kiro-cli whoami
+
+# 飞书写入路径
+npx --yes @larksuite/cli@latest auth status
+```
+
+任一结果异常、或远端 SSH/Tailscale 断开时，停止抓取/写入，先恢复网络；不要根据“某一个网页能打开”推断所有链路都正常。
+
+### 6.2 标准远端执行架构
+
+适用于用户希望从远端设备控制常驻 Mac 的场景：
+
+1. 在 Mac 与远端设备上加入同一 Tailscale tailnet；Tailscale 仅作为私有 SSH 管理通道，不直接替代 Forti 或 Clash。
+2. 从远端经 SSH 登录 Mac，进入项目目录后运行 `kiro-cli`。项目级 `.kiro/prompts/` 或全局 `~/.kiro/prompts/` 中的可复用 prompts 可触发流程。
+3. 抓取仍在 Mac 本机完成：脚本通过 `127.0.0.1:9222` 与已登录的 CDP Chrome 通信，再由浏览器会话请求 DataWind。CDP 登录态过期时，必须通过 Mac 的图形界面重新登录一次；禁止自动化绕过登录。
+4. 写入同样在 Mac 本机完成：`write-*.py` 调用本机飞书 CLI；远端只负责发起、审阅 dry-run、确认写入和查看回读结果。
+5. 长流程必须保留人工确认节点：目标名单确认、DataWind 抓取校验、写入 dry-run、`--apply` 前确认、写后回读。远端连接存在不确定性，不能因为可远控就取消这些门槛。
+
+### 6.3 无法共存时的两阶段回退方案
+
+如果 DataWind 和飞书/Kiro 处于无法稳定共存的网络环境，整体执行顺序固定为：
+
+1. **网络环境 A（能访问 DataWind）**：只做抓取，产出本地时间戳文件，不涉及飞书写入。
+2. **网络环境 B（能访问飞书/Kiro）**：只做匹配和写入，读取上一步本地 artifacts，不再访问 DataWind。
+
+两个阶段之间用文件系统传递数据，脚本设计上要求“单阶段脚本只依赖一种网络环境”。这样即使必须切网或 kiro-cli 会话短暂断开，原始抓取结果仍保留且可以继续校验/写入。
 
 ### 避坑：网络切换后不要立刻假设已经生效
 FortiVPN/代理软件切换不是瞬间完成的，尤其是刚断开一个连接、启动另一个的时候，DNS 解析可能已经变化但实际连接还没打通（比如 `curl` 会遇到 DNS 能解析出 IP，但连接本身超时/失败）。**每次网络切换后，先用一个简单的连通性检测命令确认目标服务真的可达**，再执行正式的抓取或写入操作：

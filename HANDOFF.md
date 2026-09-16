@@ -126,8 +126,10 @@ python3 scripts/write-weekly-w31.py \
 
 ## 5. 踩过的坑，新会话绝对不要重复踩
 
-### 坑 #1：FortiVPN 和 Clash 不能同时连接
-这是本项目最大的环境限制。DataWind 是公司内网（走 FortiVPN），飞书/GitHub 走的是 Clash 代理。两者互斥，切换网络时 Kiro 对话本身也可能断线。**解决方案**：把流程拆成两段，FortiVPN 下只做"抓取并存本地 JSON"，切回 Clash 后再"读本地 JSON 写飞书"，两段之间互不依赖网络状态。永远不要设计成"一个脚本里同时抓取和写入"，会在网络切换时失败。
+### 坑 #1（历史环境限制）：当操作者在中国大陆且必需公网服务需要 Clash 时，FortiVPN 与 Clash 的路由可能冲突
+早期本机环境下，DataWind 必须走 FortiVPN，而飞书/GitHub/Kiro 等服务需要 Clash；两者无法稳定同时使用，切换网络时 Kiro 对话也可能断线。**这不是全球固定前提**：只有操作者真实位于中国大陆且确实需要 Clash 时，才需要配置 Clash Mihomo TUN 与 FortiClient 的共存并逐项验收；其他国家或地区若公网服务可直连，则无需开启 Clash，也没有共存问题。
+
+若共存无法稳定通过 DataWind、Kiro、飞书 CLI 与 Tailscale 的全部连通性校验，回退方案仍是：FortiVPN 下只做“抓取并存本地 JSON”，能访问飞书的网络下再“读本地 JSON 写飞书”，两段之间互不依赖网络状态。不要设计单个脚本跨网络切换点同时做“抓取+写入”。
 
 ### 坑 #2：自动 Git commit hook 在 FortiVPN 下会报错，这是正常现象
 项目配置了 `agentStop` 触发的自动 commit+push hook（见 `.kiro/hooks/auto-commit-changes.kiro.hook`）。已经修复为：GitHub push 失败时不会导致 hook 报错，只会在本地 commit 成功后提示"稍后同步"。如果看到类似 `LibreSSL SSL_connect... unable to access github.com` 的报错，**不要慌，本地提交通常已经成功**，恢复 Clash 后下次 hook 触发会自动补推。
@@ -461,7 +463,36 @@ push/邮件 tab 直接往第117/112行起的空行写，百分比显示成 `0.02
 - 弹窗：曝光 -11.0%、点击 -18.3%、kyc -18.0%。
 - 三渠道整体回落，曝光/点击/kyc 同向下降，属正常周度波动，无异常归零或暴涨。
 
-**执行方式说明**：本期抓取段在 FortiVPN 下由 IDE 端 Kiro 完成（DataWind 登录态过期，用户在本机图形界面重新登录一次）；写入段原计划用 kiro-cli 验证远程链路，但因本机 Clash 未开 TUN/虚拟网卡模式导致 kiro-cli 连不上云端（报 `model 'auto' not available`），故写入段仍由 IDE 端 Kiro 完成。已准备 `.kiro/prompts/kyc-write-only.md`（也复制到 `~/.kiro/prompts/`），待本机 Clash TUN 与 Forti 稳定共存后，下一期可用 `@kyc-write-only` 验证远程 kiro-cli 写入。
+**当期执行方式说明（历史记录）**：本期抓取段在 FortiVPN 下由 IDE 端 Kiro 完成（DataWind 登录态过期，用户在本机图形界面重新登录一次）；写入段原计划用 kiro-cli 验证远程链路，但当时本机 Clash 未开 TUN/虚拟网卡模式，kiro-cli 无法连接云端（报 `model 'auto' not available`），故本期写入仍由 IDE 端 Kiro 完成。
+
+### ✅ 后续更新：远端操作已实现（2026-09-16）
+
+**目标与架构**：用户可在远端设备通过 Tailscale SSH 进入这台 Mac，在 Mac 本机项目目录内运行 `kiro-cli`，由 kiro-cli 调用已有脚本、CDP Chrome 会话和飞书 CLI 完成流程。Tailscale 只负责“远端设备 → Mac”的私有管理通道；DataWind、飞书和 Kiro 云端的出网仍由 Mac 的 FortiClient / Clash 网络策略决定。远端 SSH 会话不应依赖 Clash，因此 Forti 或 Clash 重新连接时仍可保持管理入口。
+
+**远端日常入口**：
+1. 从远端设备经 Tailscale SSH 登录 Mac。
+2. 进入项目：`cd "/Users/newair/Desktop/datawind fetch excel"`；本机已配置 `kyc` alias，可用于进入该目录并启动 `kiro-cli`。
+3. 在 kiro-cli 中使用项目 prompts：`/kyc-weekly-sync`、`/kyc-write-only`、`/push-weekly-sync`（若客户端显示为 `@名称`，使用对应 `@` 语法）。
+4. 优先用已登录 CDP Chrome 的 API 重放脚本取数。CDP profile 位于 `/tmp/chrome-cdp-profile`；DataWind 登录态过期时，必须由用户在 Mac 图形界面重新登录一次，不能尝试自动化登录。
+
+**网络前提必须按操作者真实所在地判断**：
+- **中国大陆**：若 Kiro CLI 或其他必需公网服务需要 Clash 才能访问，必须开启 Clash 的 Mihomo TUN/虚拟网卡模式，并让它与 FortiClient 同时工作。TUN 负责让命令行程序（包括 kiro-cli）走 Clash；FortiClient 负责 DataWind/公司内网。启用后必须验证 DataWind、Forti、Clash、kiro-cli 与 Tailscale 都可达。私网、局域网及 Tailscale 流量应按实际网络策略绕过 TUN；不要把临时 `utun` 接口编号写死，因为重连后编号会变化。
+- **其他国家或地区**：若 Kiro CLI、飞书、GitHub 等公网服务可直接访问，**不需要为了本项目开启 Clash**。此时只需 FortiClient 访问 DataWind，不存在 Clash 与 Forti 的共存问题；远端 Tailscale SSH 可直接使用。
+- 任一环境若无法同时满足所需连通性，退回历史安全方案：Forti 阶段只抓取并保存本地 artifacts，能访问飞书的网络阶段再校验和写入。
+
+**每次远端开工前的最低验收**：
+```bash
+# DataWind（Forti 路径）
+curl -s -o /dev/null -w "DataWind HTTP %{http_code}\n" --connect-timeout 8 https://datawind.xiaoxiame.com
+
+# Kiro 公网连通与登录身份
+curl -s -o /dev/null -w "Kiro HTTP %{http_code}\n" --connect-timeout 8 https://kiro.dev
+kiro-cli whoami
+
+# 飞书 CLI 登录
+npx --yes @larksuite/cli@latest auth status
+```
+DataWind、Kiro、飞书和远端 SSH 任一项异常时，停止正式同步，先修复网络或登录态。iOS 远端控制仅列为后续可选扩展，当前标准流程不依赖它。
 
 **下一期**：`0916-0922`（2026-09-16周三至09-22周二），最早在 2026-09-23（周三）运行。仍需先读飞书最新周期并向用户核对名单，弹窗实验可能在周期边界变更。
 
