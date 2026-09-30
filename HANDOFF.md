@@ -551,6 +551,36 @@ DataWind、Kiro、飞书和远端 SSH 任一项异常时，停止正式同步，
 
 **下一期**：`0930-1006`（2026-09-30周三至10-06周二），最早在 2026-10-07（周三）运行。仍需先读飞书最新周期并向用户核对名单，弹窗实验可能在周期边界变更；`90日后-0716` 本期回归，下期留意是否稳定。
 
+### ✅ Git 推送改为 SSH（2026-09-30）：解决 auto-commit hook 反复弹钥匙串授权窗
+
+**背景问题**：`auto-commit-changes` hook（`agentStop` 触发，跑 `git add + commit + git push origin main`）在本地 IDE 端运行时，每轮都弹出 macOS 系统窗「git-credential-osxkeychain 想要使用你储存在钥匙串的 github.com 机密信息」，要求输入密码授权。
+
+**根因（已查实，两个叠加因素）**：
+1. **主因——本地会话 vs 远端会话对钥匙串的可达性不同**：仓库原本用 HTTPS remote（`https://github.com/HinsC688/...`），push 靠钥匙串里存的 GitHub token，由 `git-credential-osxkeychain` 取。之前两周 hook 都是**从远端 Tailscale SSH 会话**跑的——那是非图形会话，够不到图形登录会话的钥匙串，于是 `git push` 一直**静默失败**（hook 里 `git push || printf ...` 兜底，失败不报错），`origin/main` 停在 2026-09-16、其后 4 个 commit 全积压在本地没推。今天首次在**本地 IDE 端**（图形会话）跑，git 能碰到钥匙串了，于是钥匙串正常弹授权窗——不是新故障，是第一次真正走到这一步。
+2. 旁证：9-29 有过一次 macOS 系统更新（记录里可见 macOS 27.0），系统更新有时也会重置钥匙串对凭据助手的授权。
+
+**注意**：那个弹窗要的是「解锁钥匙串」，密码只在「用户↔操作系统」之间流转，不经过 Kiro、不经过终端；私钥/凭据也从不以明文离开钥匙串。Kiro 只能看到命令的成功/失败输出。
+
+**已实施的解决方案：改用 SSH + 私钥加 passphrase 存钥匙串**
+- 复用现有 `~/.ssh/id_ed25519`（公钥已在 GitHub 账号 HinsC688 上，`ssh -T git@github.com` 认证通过），无需在 GitHub 网页操作。
+- 用户在终端执行 `ssh-keygen -p -f ~/.ssh/id_ed25519` 给原本无 passphrase 的私钥**补加了 passphrase**（这条必须用户自己敲，因为要输密码，Kiro 不经手）。
+- 用户执行 `ssh-add --apple-use-keychain ~/.ssh/id_ed25519` 把 passphrase 存进钥匙串（`ssh-add -l` 已能看到该 key 加载）。
+- Kiro 执行 `git remote set-url origin git@github.com:HinsC688/datawind-fetch-excel.git` 把 remote 改成 SSH。
+- 验证：`git push origin main` 推送成功（`bf9be9a..5b28b7d`），4 个积压 commit 全部同步，**全程无弹窗**。本地/远程均在 `5b28b7d`。
+- **hook 本身未改**：它跑的 `git push origin main` 跟着 remote 走，SSH/HTTPS 对它透明。
+- 环境前提：这台 Mac 已开 FileVault 全盘加密。
+
+**⚠️ 远端 SSH 会话（Tailscale）跑 hook 的遗留注意**：passphrase 存的是**图形登录会话的钥匙串**，远端非图形 SSH 会话**默认够不到**它。所以从远端跑 hook 触发 push 时，仍可能因拿不到 passphrase 而失败（有兜底：只本地 commit、不推送，不影响 KYC 数据与流程）。若要让远端那条路也能静默 push，需额外配置（如在远端会话内 `ssh-add` 一次，或用 agent forwarding / 在远端会话里加载 key）。今天只验证了**本地 IDE 端**这条路彻底通畅；远端那条待下次实际从远端操作时再验证/配置。
+
+**排查/自检命令备忘**：
+```bash
+git remote -v                                   # 确认是 git@github.com: 开头（SSH）
+ssh -T git@github.com                            # 应回 "Hi HinsC688! You've successfully authenticated"
+ssh-add -l                                       # 应能看到 id_ed25519 已加载
+git rev-list --count origin/main..HEAD           # 0 = 无积压未推送
+nslookup datawind.xiaoxiame.com                  # 顺带：非 198.18.x.x 才说明没被 Clash fake-ip 劫持
+```
+
 ---
 
 ## 7. 建议新会话的第一步
