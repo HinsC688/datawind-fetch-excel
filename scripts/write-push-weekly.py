@@ -24,15 +24,20 @@ def number(value):
     return int(value) if value.is_integer() else value
 
 
-def next_rows(path, base_rows, forced_offset):
+def next_rows(path, all_starts, base_rows, forced_offset):
     rows = {}
     for raw in json.loads(path.read_text())["annotated_csv"].splitlines()[1:]:
         match = re.match(r"^\[row=(\d+)\]\s*(.*)$", raw)
         if match:
             rows[int(match.group(1))] = next(csv.reader([match.group(2)]))
+    all_starts = sorted(set(all_starts))
+    upper_bound = max(rows) + 1 if rows else (max(all_starts, default=0) + 1)
+    block_end = {}
+    for index, base in enumerate(all_starts):
+        block_end[base] = all_starts[index + 1] if index + 1 < len(all_starts) else upper_bound
     selected = {}
     for base in base_rows:
-        candidates = [base + forced_offset] if forced_offset is not None else range(base, base + 6)
+        candidates = [base + forced_offset] if forced_offset is not None else range(base, block_end[base])
         row = next((candidate for candidate in candidates if candidate in rows and not rows[candidate][1].strip() and not any(rows[candidate][column].strip() for column in range(3, 8))), None)
         if row is None:
             raise SystemExit(f"No empty weekly row available for template block beginning at row {base}")
@@ -74,7 +79,7 @@ def main():
     invalid = [key for key in wanted if len(rows_by_key.get(key, [])) != 1]
     if invalid:
         raise SystemExit(f"Expected one row per target; invalid keys: {invalid}")
-    destinations = next_rows(args.template, [base for base, _, _ in targets], args.row_offset)
+    destinations = next_rows(args.template, list(locations.values()), [base for base, _, _ in targets], args.row_offset)
     plan = []
     for base, flow, task in targets:
         values = [number(rows_by_key[(flow, task)][0][ids[metric]]) for metric in METRICS]
