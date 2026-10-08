@@ -1,5 +1,5 @@
 {
-  "_说明": "0930-1006 写入方案（国庆假期顺延，10-08 周四运行）。三个 tab 名单与上期(0923-0929)完全一致，用户已确认无变化。行号来自 detect-write-rows.py。",
+  "_说明": "0930-1006 写入方案（国庆假期顺延，10-08 周四运行）。三个 tab 名单与上期(0923-0929)完全一致，用户已确认无变化。行号来自 detect-write-rows.py。 弹窗 中台-D1~7-0409后注册用户KYC引导-0826-10000U-新 本期 DataWind 无数据（已下线），用户确认本期跳过并从后续名单删除，弹窗为9行。",
   "spreadsheet_token": "Wmq4s0mJHh3HZ7tITvbu261ZsFb",
   "period_label": "0930-1006",
   "capture": {
@@ -471,15 +471,6 @@
           "reg_range_dw": "注册当天",
           "labels": {
             "reg_range": "注册当日",
-            "uj_type": "注册未FTD",
-            "is_kyc_show": "未kyc"
-          }
-        },
-        {
-          "detail": "中台-D1~7-0409后注册用户KYC引导-0826-10000U-新",
-          "reg_range_dw": "注册1-7天",
-          "labels": {
-            "reg_range": "注册1-7天",
             "uj_type": "注册未FTD",
             "is_kyc_show": "未kyc"
           }
